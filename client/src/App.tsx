@@ -1,7 +1,16 @@
 import "./App.css";
 
 function App() {
-  return <>hii</>;
+  return (
+    <>
+      <div>
+        <form>
+          <input type="file" />
+          <button>Submit</button>
+        </form>
+      </div>
+    </>
+  );
 }
 
 export default App;
