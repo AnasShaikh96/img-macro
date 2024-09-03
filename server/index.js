@@ -14,6 +14,12 @@ const {
   Paragraph,
   VerticalPositionAlign,
   VerticalPositionRelativeFrom,
+  Table,
+  TableRow,
+  TableCell,
+  convertInchesToTwip,
+  WidthType,
+  BorderStyle
 } = docx;
 
 // https://stackoverflow.com/questions/12740659/downloading-images-with-node-js
@@ -135,6 +141,200 @@ app.get("/img", async (req, res) => {
     res.download(doc)
 
   });
+})
+
+
+
+app.get('/new', async (req, res) => {
+  const doc = new Document({
+    creator: "Dolan Miu",
+    description: "My extremely interesting document",
+    title: "My Document",
+    compatibility: {
+      // doNotBreakWrappedTables:true
+    },
+    sections: [
+      {
+        children: [
+          new Paragraph({
+            text: "Header title",
+            // heading: HeadingLevel.TITLE,
+            alignment: docx.AlignmentType.CENTER,
+            spacing: {
+              after: 350
+            },
+          }),
+          new docx.Table({
+            rows: [
+              new docx.TableRow({
+                children: [
+                  new docx.TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new ImageRun({
+                            data: fs.readFileSync("./cat.jpg"),
+                            transformation: {
+                              width: 250,
+                              height: 350
+                            }
+                          })
+                        ]
+                        ,
+                        alignment: docx.AlignmentType.CENTER
+                      }),
+                    ],
+
+                    verticalAlign: docx.VerticalAlign.CENTER,
+                    margins: {
+                      top: convertInchesToTwip(0.2),
+                      bottom: convertInchesToTwip(0.2),
+                      left: convertInchesToTwip(0.2),
+                      right: convertInchesToTwip(0.2),
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new ImageRun({
+                            data: fs.readFileSync("./cat.jpg"),
+                            transformation: {
+                              width: 250,
+                              height: 350
+                            }
+                          })
+                        ]
+                        ,
+                        alignment: docx.AlignmentType.CENTER
+                      }),
+                    ],
+                    verticalAlign: docx.VerticalAlign.CENTER,
+                    margins: {
+                      top: convertInchesToTwip(0.2),
+                      bottom: convertInchesToTwip(0.2),
+                      left: convertInchesToTwip(0.2),
+                      right: convertInchesToTwip(0.2),
+                    },
+                  }),
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [
+                      new Paragraph("Hello")
+                    ],
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph("Hello")
+                    ],
+                  }),
+                ]
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new ImageRun({
+                            data: fs.readFileSync("./cat.jpg"),
+                            transformation: {
+                              width: 250,
+                              height: 350
+                            }
+                          })
+                        ]
+                        ,
+                        alignment: docx.AlignmentType.CENTER
+                      }),
+                    ],
+                    verticalAlign: docx.VerticalAlign.CENTER,
+                    margins: {
+                      top: convertInchesToTwip(0.2),
+                      bottom: convertInchesToTwip(0.2),
+                      left: convertInchesToTwip(0.2),
+                      right: convertInchesToTwip(0.2),
+                    },
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new ImageRun({
+                            data: fs.readFileSync("./cat.jpg"),
+                            transformation: {
+                              width: 250,
+                              height: 350
+                            }
+                          })
+                        ]
+                        ,
+                        alignment: docx.AlignmentType.CENTER
+                      }),
+                    ],
+                    verticalAlign: docx.VerticalAlign.CENTER,
+                    margins: {
+                      top: convertInchesToTwip(0.2),
+                      bottom: convertInchesToTwip(0.2),
+                      left: convertInchesToTwip(0.2),
+                      right: convertInchesToTwip(0.2),
+                    },
+                  }),
+
+                ],
+              }),
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [
+                      new Paragraph("Hello")
+                    ],
+                  }),
+                  new TableCell({
+                    children: [
+                      new Paragraph("Hello")
+                    ],
+                  }),
+                ]
+              })
+            ],
+            width: {
+              size: 100,
+              type: WidthType.PERCENTAGE,
+            }
+          })
+        ],
+        properties: {
+          page: {
+            margin: {
+              top: convertInchesToTwip(0.3),
+              bottom: convertInchesToTwip(0.3),
+              right: convertInchesToTwip(0.5),
+              left: convertInchesToTwip(0.5)
+            },
+            borders: {
+              pageBorderLeft: {
+                style: BorderStyle.THICK_THIN_MEDIUM_GAP,
+                size: 30,
+                color: "#000000",
+                space: 500
+              }
+            }
+          }
+        }
+      }
+    ],
+  });
+
+  const b64string = await Packer.toBase64String(doc);
+
+  res.setHeader('Content-Disposition', 'attachment; filename=MyDocument5.docx');
+  res.send(Buffer.from(b64string, 'base64'));
+  res.download(doc)
+
 })
 
 
