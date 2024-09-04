@@ -3,6 +3,11 @@ const app = express()
 const docx = require('docx')
 const request = require('request');
 const fs = require('fs');
+const cors = require('cors')
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cors());
 
 const {
   Document,
@@ -22,130 +27,8 @@ const {
   BorderStyle
 } = docx;
 
-// https://stackoverflow.com/questions/12740659/downloading-images-with-node-js
-const download = (uri, filename, callback) => {
-  request.head(uri, (err, res, body) => {
-    request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-  });
-};
 
-const URL = 'https://raw.githubusercontent.com/dolanmiu/docx/ccd655ef8be3828f2c4b1feb3517a905f98409d9/demo/images/cat.jpg';
-
-
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-
-
-app.get('/', (req, res) => {
-  res.json({
-    hello: 'hii'
-  })
-})
-
-app.get("/get", async (req, res) => {
-  const doc = new Document({
-    sections: [{
-      properties: {},
-      children: [
-        new Paragraph({
-          children: [
-            new TextRun("Hello World"),
-            new TextRun({
-              text: "Foo Bar",
-              bold: true,
-            }),
-            new TextRun({
-              text: "\tGithub is the best",
-              bold: true,
-            }),
-          ],
-        }),
-      ],
-    }],
-  });
-
-  const b64string = await Packer.toBase64String(doc);
-
-  res.setHeader('Content-Disposition', 'attachment; filename=MyDocument1.docx');
-  res.send(Buffer.from(b64string, 'base64'));
-  res.download(doc)
-
-
-})
-
-app.get("/img", async (req, res) => {
-  download(URL, 'cat.jpg', async () => {
-    const doc = new Document({
-      sections: [{
-        children: [
-          new Paragraph("Hello World"),
-          new Paragraph({
-            children: [
-              new ImageRun({
-                data: fs.readFileSync("./cat.jpg"),
-                transformation: {
-                  width: 100,
-                  height: 100,
-                }
-              }),
-            ],
-          }),
-          new Paragraph({
-            children: [
-              new ImageRun({
-                data: fs.readFileSync("./cat.jpg"),
-                transformation: {
-                  width: 200,
-                  height: 200,
-                },
-                floating: {
-                  horizontalPosition: {
-                    offset: 1014400,
-                  },
-                  verticalPosition: {
-                    offset: 1014400,
-                  },
-                },
-              }),
-            ],
-          }),
-          new Paragraph({
-            children: [
-              new ImageRun({
-                data: fs.readFileSync("./cat.jpg"),
-                transformation: {
-                  width: 200,
-                  height: 200,
-                },
-                floating: {
-                  horizontalPosition: {
-                    relative: HorizontalPositionRelativeFrom.PAGE,
-                    align: HorizontalPositionAlign.RIGHT,
-                  },
-                  verticalPosition: {
-                    relative: VerticalPositionRelativeFrom.PAGE,
-                    align: VerticalPositionAlign.BOTTOM,
-                  },
-                },
-              }),
-            ],
-          }),
-        ],
-      }],
-    });
-
-    const b64string = await Packer.toBase64String(doc);
-
-    res.setHeader('Content-Disposition', 'attachment; filename=MyDocument2.docx');
-    res.send(Buffer.from(b64string, 'base64'));
-    res.download(doc)
-
-  });
-})
-
-
-
-app.get('/new', async (req, res) => {
+app.get('/uploadFiles', async (req, res) => {
   const doc = new Document({
     creator: "Dolan Miu",
     description: "My extremely interesting document",
@@ -337,11 +220,38 @@ app.get('/new', async (req, res) => {
 
 })
 
+// app.post("/upload", upload.single("file"), async (req, res) => {
+//   const chunk = req.file.buffer;
+//   const chunkNumber = Number(req.body.chunkNumber); // Sent from the client
+//   const totalChunks = Number(req.body.totalChunks); // Sent from the client
+//   const fileName = req.body.originalname;
 
-app.post('/images', (req, res) => {
-  res.json({
-    message: 'img received'
-  })
-})
+//   const chunkDir = __dirname + "/chunks"; // Directory to save chunks
+
+//   if (!fs.existsSync(chunkDir)) {
+//     fs.mkdirSync(chunkDir);
+//   }
+
+//   const chunkFilePath = `${chunkDir}/${fileName}.part_${chunkNumber}`;
+
+//   try {
+//     await fs.promises.writeFile(chunkFilePath, chunk);
+//     console.log(`Chunk ${chunkNumber}/${totalChunks} saved`);
+
+//     if (chunkNumber === totalChunks - 1) {
+//       // If this is the last chunk, merge all chunks into a single file
+//       await mergeChunks(fileName, totalChunks);
+//       console.log("File merged successfully");
+//     }
+
+//     res.status(200).json({ message: "Chunk uploaded successfully" });
+//   } catch (error) {
+//     console.error("Error saving chunk:", error);
+//     res.status(500).json({ error: "Error saving chunk" });
+//   }
+// });
+
+
+
 
 app.listen(3000, () => console.log('Server up at 3000'))
