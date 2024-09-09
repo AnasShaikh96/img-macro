@@ -2,23 +2,9 @@ import React, { useState } from "react";
 import "./App.css";
 import axios from "axios";
 
-// function App() {
-
-//   return (
-//     <>
-//       <div>
-//         <form>
-//           <input type="file" accept="image/*" multiple />
-//           <button>Submit</button>
-//         </form>
-//       </div>
-//     </>
-//   );
-// }
-
+ 
 function App() {
   const [files, setFiles] = useState<File[]>([]);
-  // const [uploadedFiles, setUploadedFiles] = useState([]);
 
   function handleMultipleChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.files) {
@@ -29,7 +15,7 @@ function App() {
 
   function handleMultipleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const url = "http://localhost:3000/images";
+    const url = "http://localhost:3000/upload";
     const formData = new FormData();
 
     files.forEach((file: string | Blob, index: number) => {

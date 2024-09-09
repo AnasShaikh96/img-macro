@@ -3,7 +3,9 @@ const app = express()
 const docx = require('docx')
 const request = require('request');
 const fs = require('fs');
-const cors = require('cors')
+const cors = require('cors');
+const multer = require('multer');
+const upload = multer()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -24,11 +26,35 @@ const {
   TableCell,
   convertInchesToTwip,
   WidthType,
-  BorderStyle
+  BorderStyle,
+  AlignmentType,
+  VerticalAlign
 } = docx;
 
+app.post('/upload', upload.any(), async (req, res) => {
 
-app.get('/uploadFiles', async (req, res) => {
+  const formFiles = req.files;
+
+  if (!formFiles) {
+    res.status(404).json({
+      message: 'Error Files not present',
+    })
+  }
+
+  if (formFiles.length === 0) {
+    res.status(404).json({
+      message: 'Error Files not present',
+    })
+  }
+
+  const imageTableCell = async (arr) => {
+
+    const tempArr = arr.map((curr, i) => console.log('hello', curr))
+
+  }
+
+
+
   const doc = new Document({
     creator: "Dolan Miu",
     description: "My extremely interesting document",
@@ -42,16 +68,17 @@ app.get('/uploadFiles', async (req, res) => {
           new Paragraph({
             text: "Header title",
             // heading: HeadingLevel.TITLE,
-            alignment: docx.AlignmentType.CENTER,
+            alignment: AlignmentType.CENTER,
             spacing: {
               after: 350
             },
           }),
-          new docx.Table({
+          new Table({
             rows: [
-              new docx.TableRow({
+              new TableRow({
                 children: [
-                  new docx.TableCell({
+                  imageTableCell(formFiles),
+                  new TableCell({
                     children: [
                       new Paragraph({
                         children: [
@@ -64,11 +91,11 @@ app.get('/uploadFiles', async (req, res) => {
                           })
                         ]
                         ,
-                        alignment: docx.AlignmentType.CENTER
+                        alignment: AlignmentType.CENTER
                       }),
                     ],
 
-                    verticalAlign: docx.VerticalAlign.CENTER,
+                    verticalAlign: VerticalAlign.CENTER,
                     margins: {
                       top: convertInchesToTwip(0.2),
                       bottom: convertInchesToTwip(0.2),
@@ -115,7 +142,87 @@ app.get('/uploadFiles', async (req, res) => {
                     ],
                   }),
                 ]
-              }),
+              })
+
+            ],
+            width: {
+              size: 100,
+              type: WidthType.PERCENTAGE,
+            }
+          })
+        ],
+        properties: {
+          page: {
+            margin: {
+              top: convertInchesToTwip(0.3),
+              bottom: convertInchesToTwip(0.3),
+              right: convertInchesToTwip(0.5),
+              left: convertInchesToTwip(0.5)
+            },
+            borders: {
+              pageBorderLeft: {
+                style: BorderStyle.THICK_THIN_MEDIUM_GAP,
+                size: 30,
+                color: "#000000",
+                space: 500
+              }
+            }
+          }
+        }
+      }
+    ],
+  });
+
+
+
+
+  // res.status(200).json({
+  //   message: 'API Succesful',
+  //   data: formFiles
+  // })
+
+  // const b64string = await Packer.toBase64String(doc);
+
+  // let filename = 'my-custom-filename.docx'
+  // res.setHeader('Content-Disposition', 'attachment; filename=' + filename);
+  // res.send(Buffer.from(b64string, 'base64'));
+  // res.download(doc)
+
+
+  const b64string = await Packer.toBase64String(doc);
+    
+  res.setHeader('Content-Disposition', 'attachment; filename=My Document.docx');
+  res.send(Buffer.from(b64string, 'base64'));
+  res.download(doc,'newfile')
+
+
+})
+
+
+app.get('/uploadFiles', async (req, res) => {
+  const doc = new Document({
+    creator: "Dolan Miu",
+    description: "My extremely interesting document",
+    title: "My Document",
+    compatibility: {
+      // doNotBreakWrappedTables:true
+    },
+    sections: [
+      {
+        children: [
+          new Paragraph({
+            text: "Header title",
+            // heading: HeadingLevel.TITLE,
+            alignment: AlignmentType.CENTER,
+            spacing: {
+              after: 350
+            },
+          }),
+          new Table({
+            rows: [
+
+
+
               new TableRow({
                 children: [
                   new TableCell({
@@ -131,10 +238,11 @@ app.get('/uploadFiles', async (req, res) => {
                           })
                         ]
                         ,
-                        alignment: docx.AlignmentType.CENTER
+                        alignment: AlignmentType.CENTER
                       }),
                     ],
-                    verticalAlign: docx.VerticalAlign.CENTER,
+
+                    verticalAlign: VerticalAlign.CENTER,
                     margins: {
                       top: convertInchesToTwip(0.2),
                       bottom: convertInchesToTwip(0.2),
@@ -166,7 +274,6 @@ app.get('/uploadFiles', async (req, res) => {
                       right: convertInchesToTwip(0.2),
                     },
                   }),
-
                 ],
               }),
               new TableRow({
@@ -220,36 +327,36 @@ app.get('/uploadFiles', async (req, res) => {
 
 })
 
-// app.post("/upload", upload.single("file"), async (req, res) => {
-//   const chunk = req.file.buffer;
-//   const chunkNumber = Number(req.body.chunkNumber); // Sent from the client
-//   const totalChunks = Number(req.body.totalChunks); // Sent from the client
-//   const fileName = req.body.originalname;
+app.post("/upload", upload.single("file"), async (req, res) => {
+  const chunk = req.file.buffer;
+  const chunkNumber = Number(req.body.chunkNumber); // Sent from the client
+  const totalChunks = Number(req.body.totalChunks); // Sent from the client
+  const fileName = req.body.originalname;
 
-//   const chunkDir = __dirname + "/chunks"; // Directory to save chunks
+  const chunkDir = __dirname + "/chunks"; // Directory to save chunks
 
-//   if (!fs.existsSync(chunkDir)) {
-//     fs.mkdirSync(chunkDir);
-//   }
+  if (!fs.existsSync(chunkDir)) {
+    fs.mkdirSync(chunkDir);
+  }
 
-//   const chunkFilePath = `${chunkDir}/${fileName}.part_${chunkNumber}`;
+  const chunkFilePath = `${chunkDir}/${fileName}.part_${chunkNumber}`;
 
-//   try {
-//     await fs.promises.writeFile(chunkFilePath, chunk);
-//     console.log(`Chunk ${chunkNumber}/${totalChunks} saved`);
+  try {
+    await fs.promises.writeFile(chunkFilePath, chunk);
+    console.log(`Chunk ${chunkNumber}/${totalChunks} saved`);
 
-//     if (chunkNumber === totalChunks - 1) {
-//       // If this is the last chunk, merge all chunks into a single file
-//       await mergeChunks(fileName, totalChunks);
-//       console.log("File merged successfully");
-//     }
+    if (chunkNumber === totalChunks - 1) {
+      // If this is the last chunk, merge all chunks into a single file
+      await mergeChunks(fileName, totalChunks);
+      console.log("File merged successfully");
+    }
 
-//     res.status(200).json({ message: "Chunk uploaded successfully" });
-//   } catch (error) {
-//     console.error("Error saving chunk:", error);
-//     res.status(500).json({ error: "Error saving chunk" });
-//   }
-// });
+    res.status(200).json({ message: "Chunk uploaded successfully" });
+  } catch (error) {
+    console.error("Error saving chunk:", error);
+    res.status(500).json({ error: "Error saving chunk" });
+  }
+});
 
 
 
