@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "./App.css";
 import axios from "axios";
 
- 
 function App() {
   const [files, setFiles] = useState<File[]>([]);
 
@@ -49,6 +48,7 @@ function App() {
           type="file"
           accept="image/*"
           multiple
+          name="gallery"
           onChange={handleMultipleChange}
         />
         <button type="submit">Upload</button>
