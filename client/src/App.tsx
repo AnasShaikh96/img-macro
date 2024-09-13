@@ -49,7 +49,7 @@ function App() {
       })
       .then((res) => {
         const data = Uint8Array.from(res.data);
-        const content = new Blob([data], { type: "base64" });
+        const content = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
 
         const encodedUri = window.URL.createObjectURL(content);
         const link = document.createElement("a");
@@ -62,46 +62,7 @@ function App() {
       .catch((err) => console.log(err));
   };
 
-  const downloadDocx = async () => {
-    try {
-      // Fetch the file from the server
-      const response = await fetch("/your-api-endpoint", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/octet-stream",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to download document");
-      }
-
-      // Get the response as a Blob (binary data)
-      const blob = await response.blob();
-
-      // Create a link element
-      const link = document.createElement("a");
-
-      // Create a URL for the blob and set it as the href of the link
-      const url = window.URL.createObjectURL(blob);
-      link.href = url;
-
-      // Set the download attribute with the desired file name
-      link.download = "MyDocument.docx";
-
-      // Append the link to the body
-      document.body.appendChild(link);
-
-      // Programmatically click the link to trigger the download
-      link.click();
-
-      // Cleanup: Remove the link and revoke the URL
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading the document:", error);
-    }
-  };
+ 
 
   return (
     <div className="App">
@@ -116,7 +77,7 @@ function App() {
         <button type="submit">Upload</button>
       </form>
 
-      <button onClick={downloadDocx} type="button">
+      <button onClick={HandleClick} type="button">
         Dowload Files
       </button>
 

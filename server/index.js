@@ -66,128 +66,64 @@ app.get('/download', async (req, res) => {
 
   try {
 
-    let directoryPath = path.join(__dirname, '/tmp/uploads')
-    const files = await fs.promises.readdir(directoryPath);
-
-
-
     const doc = new Document({
-      creator: "Dolan Miu",
-      description: "My extremely interesting document",
-      title: "My Document",
-      compatibility: {
-        // doNotBreakWrappedTables:true
-      },
-      sections: [
-        {
-          children: [
-            new Paragraph({
-              text: "Header title",
-              // heading: HeadingLevel.TITLE,
-              alignment: AlignmentType.CENTER,
-              spacing: {
-                after: 350
-              },
-            }),
-            new Table({
-              rows: [
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new ImageRun({
-                              data: fs.readFileSync("./tmp/uploads/cat.jpg"),
-                              transformation: {
-                                width: 250,
-                                height: 350
-                              }
-                            })
-                          ]
-                          ,
-                          alignment: AlignmentType.CENTER
-                        }),
-                      ],
-
-                      verticalAlign: VerticalAlign.CENTER,
-                      margins: {
-                        top: convertInchesToTwip(0.2),
-                        bottom: convertInchesToTwip(0.2),
-                        left: convertInchesToTwip(0.2),
-                        right: convertInchesToTwip(0.2),
-                      },
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph({
-                          children: [
-                            new ImageRun({
-                              data: fs.readFileSync("./tmp/uploads/cat.jpg"),
-                              transformation: {
-                                width: 250,
-                                height: 350
-                              }
-                            })
-                          ]
-                          ,
-                          alignment: docx.AlignmentType.CENTER
-                        }),
-                      ],
-                      verticalAlign: docx.VerticalAlign.CENTER,
-                      margins: {
-                        top: convertInchesToTwip(0.2),
-                        bottom: convertInchesToTwip(0.2),
-                        left: convertInchesToTwip(0.2),
-                        right: convertInchesToTwip(0.2),
-                      },
-                    }),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    new TableCell({
-                      children: [
-                        new Paragraph("Hello")
-                      ],
-                    }),
-                    new TableCell({
-                      children: [
-                        new Paragraph("Hello")
-                      ],
-                    }),
-                  ]
-                })
-
-              ],
-              width: {
-                size: 100,
-                type: WidthType.PERCENTAGE,
-              }
-            })
-          ],
-          properties: {
-            page: {
-              margin: {
-                top: convertInchesToTwip(0.3),
-                bottom: convertInchesToTwip(0.3),
-                right: convertInchesToTwip(0.5),
-                left: convertInchesToTwip(0.5)
-              },
-              borders: {
-                pageBorderLeft: {
-                  style: BorderStyle.THICK_THIN_MEDIUM_GAP,
-                  size: 30,
-                  color: "#000000",
-                  space: 500
+      sections: [{
+        children: [
+          new Paragraph("Hello World"),
+          new Paragraph({
+            children: [
+              new ImageRun({
+                data: fs.readFileSync("./cat.jpg"),
+                transformation: {
+                  width: 100,
+                  height: 100,
                 }
-              }
-            }
-          }
-        }
-      ],
+              }),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new ImageRun({
+                data: fs.readFileSync("./cat.jpg"),
+                transformation: {
+                  width: 200,
+                  height: 200,
+                },
+                floating: {
+                  horizontalPosition: {
+                    offset: 1014400,
+                  },
+                  verticalPosition: {
+                    offset: 1014400,
+                  },
+                },
+              }),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new ImageRun({
+                data: fs.readFileSync("./cat.jpg"),
+                transformation: {
+                  width: 200,
+                  height: 200,
+                },
+                floating: {
+                  horizontalPosition: {
+                    relative: HorizontalPositionRelativeFrom.PAGE,
+                    align: HorizontalPositionAlign.RIGHT,
+                  },
+                  verticalPosition: {
+                    relative: VerticalPositionRelativeFrom.PAGE,
+                    align: VerticalPositionAlign.BOTTOM,
+                  },
+                },
+              }),
+            ],
+          }),
+        ],
+      }],
     });
-
     const b64string = await Packer.toBase64String(doc);
 
     res.setHeader('Content-Disposition', 'attachment; filename=MyDocument.docx');
