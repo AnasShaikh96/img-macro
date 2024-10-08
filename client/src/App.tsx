@@ -52,7 +52,7 @@ function App() {
             const url = window.URL.createObjectURL(blob);
 
             link.href = url;
-            link.download = "AnasDoc.docx";
+            link.download = "MyDoc.docx";
 
             document.body.appendChild(link);
             link.click();

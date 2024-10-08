@@ -60,6 +60,64 @@ app.post('/upload', uploadMiddleware, (req, res) => {
 })
 
 
+
+const ImageCallback = () => {
+
+  const folderName = './tmp/uploads/'
+  let tempArr = []
+
+  if (fs.existsSync(folderName)) {
+
+    fs.readdirSync(folderName).forEach((file) => {
+      const path = folderName + file;
+      console.log(path)
+
+      // const para = new Paragraph({
+      //   children: [
+      //     new ImageRun({
+      //       data: fs.readFileSync(path),
+      //       transformation: {
+      //         width: 200,
+      //         height: 200,
+      //       },
+      //       floating: {
+      //         horizontalPosition: {
+      //           offset: 1014400,
+      //         },
+      //         verticalPosition: {
+      //           offset: 1014400,
+      //         },
+      //       },
+      //     }),
+      //   ],
+      // });
+
+      const para = new ImageRun({
+        data: fs.readFileSync(path),
+        transformation: {
+          width: 400,
+          height: 400,
+        }
+      })
+
+      tempArr.push(para)
+    }
+    )
+  }
+
+
+  // return new ImageRun({
+  //   data: fs.readFileSync("./tmp/uploads/cat.jpg"),
+  //   transformation: {
+  //     width: 400,
+  //     height: 400,
+  //   }
+  // })
+
+  return tempArr;
+}
+
+
 app.get('/download', async (req, res) => {
 
   try {
@@ -69,62 +127,62 @@ app.get('/download', async (req, res) => {
         children: [
           new Paragraph("Hello World"),
           new Paragraph({
-            children: [
-              new ImageRun({
-                data: fs.readFileSync("./cat.jpg"),
-                transformation: {
-                  width: 100,
-                  height: 100,
-                }
-              }),
-            ],
+            children: ImageCallback()
+            // new ImageRun({
+            //   data: fs.readFileSync("./tmp/uploads/cat.jpg"),
+            //   transformation: {
+            //     width: 400,
+            //     height: 400,
+            //   }
+            // }),
+
           }),
-          new Paragraph({
-            children: [
-              new ImageRun({
-                data: fs.readFileSync("./cat.jpg"),
-                transformation: {
-                  width: 200,
-                  height: 200,
-                },
-                floating: {
-                  horizontalPosition: {
-                    offset: 1014400,
-                  },
-                  verticalPosition: {
-                    offset: 1014400,
-                  },
-                },
-              }),
-            ],
-          }),
-          new Paragraph({
-            children: [
-              new ImageRun({
-                data: fs.readFileSync("./cat.jpg"),
-                transformation: {
-                  width: 200,
-                  height: 200,
-                },
-                floating: {
-                  horizontalPosition: {
-                    relative: HorizontalPositionRelativeFrom.PAGE,
-                    align: HorizontalPositionAlign.RIGHT,
-                  },
-                  verticalPosition: {
-                    relative: VerticalPositionRelativeFrom.PAGE,
-                    align: VerticalPositionAlign.BOTTOM,
-                  },
-                },
-              }),
-            ],
-          }),
+          // new Paragraph({
+          //   children: [
+          //     new ImageRun({
+          //       data: fs.readFileSync("./cat.jpg"),
+          //       transformation: {
+          //         width: 200,
+          //         height: 200,
+          //       },
+          //       floating: {
+          //         horizontalPosition: {
+          //           offset: 1014400,
+          //         },
+          //         verticalPosition: {
+          //           offset: 1014400,
+          //         },
+          //       },
+          //     }),
+          //   ],
+          // }),
+          // new Paragraph({
+          //   children: [
+          //     new ImageRun({
+          //       data: fs.readFileSync("./cat.jpg"),
+          //       transformation: {
+          //         width: 200,
+          //         height: 200,
+          //       },
+          //       floating: {
+          //         horizontalPosition: {
+          //           relative: HorizontalPositionRelativeFrom.PAGE,
+          //           align: HorizontalPositionAlign.RIGHT,
+          //         },
+          //         verticalPosition: {
+          //           relative: VerticalPositionRelativeFrom.PAGE,
+          //           align: VerticalPositionAlign.BOTTOM,
+          //         },
+          //       },
+          //     }),
+          //   ],
+          // }),
         ],
       }],
     });
     const b64string = await Packer.toBase64String(doc);
 
-    res.setHeader('Content-Disposition', 'attachment; filename=MyDocument1.docx');
+    // res.setHeader('Content-Disposition', 'attachment; filename=MyDocument1.docx');
     res.send(Buffer.from(b64string, 'base64'));
 
   } catch (error) {
@@ -133,7 +191,6 @@ app.get('/download', async (req, res) => {
     res.status(500).json(error)
 
   }
-
 })
 
 
