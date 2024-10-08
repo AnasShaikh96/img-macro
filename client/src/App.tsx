@@ -5,8 +5,6 @@ import axios from "axios";
 function App() {
   const [files, setFiles] = useState<File[]>([]);
 
-  // const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
-
   function handleMultipleChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.files) {
       const images = Array.from(event.target.files);
@@ -41,55 +39,30 @@ function App() {
   }
 
   const HandleClick = async () => {
-    // await axios
-    //   .get("http://localhost:3000/download", {
-    //     headers: {
-    //       "Content-Type": "application/octet-stream",
-    //     },
-    //   })
-    //   .then((res) => {
-    //     // const data = Uint8Array.from(res.data);
-    //     // const content = new Blob([data], {
-    //     //   type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    //     // });
-
-    //     // const encodedUri = window.URL.createObjectURL(content);
-    //     // const link = document.createElement("a");
-
-    //     // link.setAttribute("href", encodedUri);
-    //     // link.setAttribute("download", "MyDocument.docx");
-
-    //     // link.click();
-    //   })
-    //   .catch((err) => console.log(err));
-
     try {
-      // Fetch the document as a Blob directly
-      const response = await fetch("http://localhost:3000/download", {
-        method: "GET",
-      });
+      await axios
+        .get("http://localhost:3000/download", {
+          responseType: "blob",
+        })
+        .then(async (res) => {
+          try {
+            const blob = await res.data;
 
-      if (!response.ok) {
-        throw new Error("Failed to download document");
-      }
+            const link = document.createElement("a");
+            const url = window.URL.createObjectURL(blob);
 
-      // Get the Blob from the response
-      const blob = await response.blob();
+            link.href = url;
+            link.download = "AnasDoc.docx";
 
-      // Create a download link for the Blob
-      const link = document.createElement("a");
-      const url = window.URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.click();
 
-      link.href = url;
-      link.download = "MyDocument.docx"; // Set the desired file name
-
-      // Trigger the download
-      document.body.appendChild(link);
-      link.click();
-
-      // Clean up
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+          } catch (error) {
+            console.log(error);
+          }
+        });
     } catch (error) {
       console.error("Error downloading document:", error);
     }
