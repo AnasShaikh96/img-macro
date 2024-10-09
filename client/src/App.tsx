@@ -84,10 +84,6 @@ function App() {
       <button onClick={HandleClick} type="button">
         Dowload Files
       </button>
-
-      {/* {uploadedFiles && uploadedFiles.map((file, index) => (
-        <img key={index} src={file} alt={`Uploaded content ${index}`} />
-      ))} */}
     </div>
   );
 }
