@@ -7,7 +7,6 @@ const uploadMiddleware = require('./main');
 const path = require('path');
 const request = require('request');
 
-
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors());
@@ -123,113 +122,69 @@ const generateTableCells = () => {
   const folderName = './tmp/uploads/'
   let tempArr = []
 
-
-  if (fs.existsSync(folderName)) {
-
-    let storeCells = [];
-
-    fs.readdirSync(folderName).forEach((file, i) => {
-      const path = folderName + file;
-
-      const cell = new TableCell({
-        children: [
-          new Paragraph({
-            children: [
-              new ImageRun({
-                data: fs.readFileSync(path),
-                transformation: {
-                  width: 100,
-                  height: 100
-                },
-              }),
-            ]
-          }),
-          new Paragraph('hello'),
-        ],
-        verticalAlign: VerticalAlign.CENTER,
-        margins: {
-          top: convertInchesToTwip(0.69),
-          bottom: convertInchesToTwip(0.69),
-          left: convertInchesToTwip(0.69),
-          right: convertInchesToTwip(0.69),
-        },
-        borders: {
-          top: {
-            style: BorderStyle.SINGLE,
-            size: 1,
-            color: "000000",
-          },
-          bottom: {
-            style: BorderStyle.SINGLE,
-            size: 5,
-            color: "000000",
-          },
-        }
-      })
-
-      storeCells.push(cell);
-
-      // if(i + )
-
-
-
-      // const row = new TableRow({
-      //   children: [cell]
-      // })
-
-      // tempArr.push(cell)
-
-
-
-
-
-
-
-
-
-
-
-
-      // I'm trying to achieve an instance here where for every 2 cell I create 1 row, here is what I have tried yet. using a length to determine if it is 2 or around 2 and then pushing row into  
-      // if (i !== 0 && (i % 2 !== 1 || i === storeCells.length - 1)) {
-
-      //   const row = new TableRow({
-      //     children: storeCells
-      //   })
-      //   tempArr.push(row)
-      //   // storeCells.length = 0
-      // } else {
-      //   storeCells.push(cell)
-      // }
-
-      // tempArr.push(cell)
-    })
-
-
-    let skipNum = 0;
-    storeCells.forEach((cell, i) => {
-      if (i === storeCells.length) {
-        const row = new TableRow({
-          children: [cell]
-        })
-        tempArr.push(row)
-      } else if (i !== skipNum || i === 0) {
-        const row = new TableRow({
-          children: [cell, storeCells[i + 1]]
-        })
-        skipNum = i + 1;
-        tempArr.push(row)
-      }
-
-    })
-
-
+  if (!fs.existsSync(folderName)) {
+    return tempArr;
   }
 
-  // let rowArr = []
-  // tempArr.forEach((row, i) => {
+  const storeCells = [];
+  const files = fs.readdirSync(folderName)
 
-  // })
+
+  const createTableCell = (path) => {
+    return new TableCell({
+      children: [
+        new Paragraph({
+          children: [
+            new ImageRun({
+              data: fs.readFileSync(path),
+              transformation: {
+                width: 300,
+                height: 300
+              },
+            }),
+          ]
+        }),
+        new Paragraph('hello'),
+      ],
+      verticalAlign: VerticalAlign.CENTER,
+      margins: {
+        // top: convertInchesToTwip(0.69),
+        // bottom: convertInchesToTwip(0.69),
+        // left: convertInchesToTwip(0.69),
+        // right: convertInchesToTwip(0.69),
+      },
+      borders: {
+        top: {
+          style: BorderStyle.SINGLE,
+          size: 1,
+          color: "000000",
+        },
+        bottom: {
+          style: BorderStyle.SINGLE,
+          size: 5,
+          color: "000000",
+        },
+      }
+    })
+  }
+
+  files.forEach((file) => {
+    const filePath = path.join(folderName, file)
+    const cell = createTableCell(filePath)
+    storeCells.push(cell);
+  })
+
+
+
+  for (let i = 0; i < storeCells.length; i += 2) {
+
+    if (storeCells && storeCells[i]) {
+      const row = new TableRow({
+        children: storeCells[i + 1] ? [storeCells[i], storeCells[i + 1]] : [storeCells[i]],
+      })
+      tempArr.push(row);
+    }
+  }
 
   return tempArr
 }
@@ -374,8 +329,8 @@ app.get('/download', async (req, res) => {
             //   }),
             // ],
             width: {
-              size: 4535,
-              type: WidthType.AUTO,
+              size: 5000,
+              type: WidthType.DXA,
             },
           }),
         ],
