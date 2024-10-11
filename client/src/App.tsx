@@ -1,18 +1,42 @@
 import React, { useState } from "react";
 import "./App.css";
 import axios from "axios";
+import imageCompression, { Options } from "browser-image-compression";
 
 function App() {
   const [files, setFiles] = useState<File[]>([]);
 
-  function handleMultipleChange(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleMultipleChange(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
     if (event.target.files) {
-      const images = Array.from(event.target.files);
+      const images = Array.from(event.target.files) ?? [];
+      const compressedImages = await Promise.all(
+        images.map((image: File) => imageCompressor(image))
+      );
+
+      console.log(compressedImages)
+
       setFiles(images);
     }
   }
 
-  function handleMultipleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const imageCompressor = async (data: File) => {
+    const options: Options = {
+      maxSizeMB: 0.25,
+      useWebWorker: true,
+    };
+
+    try {
+      const compressImage = await imageCompression(data, options);
+      return compressImage;
+    } catch (error) {
+      console.log("error", error);
+      throw error;
+    }
+  };
+
+  async function handleMultipleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const url = "http://localhost:3000/upload";
     const formData = new FormData();
