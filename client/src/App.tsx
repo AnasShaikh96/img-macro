@@ -11,25 +11,29 @@ function App() {
   ) {
     if (event.target.files) {
       const images = Array.from(event.target.files) ?? [];
-      const compressedImages = await Promise.all(
-        images.map((image: File) => imageCompressor(image))
-      );
+      // await Promise.all(images.map((image: File) => imageCompressor(image)));
 
-      console.log(compressedImages)
+      // console.log(compressedImages);
 
       setFiles(images);
     }
   }
 
+  // console.log(files);
+
   const imageCompressor = async (data: File) => {
     const options: Options = {
       maxSizeMB: 0.25,
       useWebWorker: true,
+      // fileType: "image/png",
+      // onProgress: (e) => console.log(e),
     };
 
     try {
       const compressImage = await imageCompression(data, options);
       return compressImage;
+      // console.log(compressImage);
+      // setFiles((prev) => [...prev, compressImage]);
     } catch (error) {
       console.log("error", error);
       throw error;
@@ -41,9 +45,30 @@ function App() {
     const url = "http://localhost:3000/upload";
     const formData = new FormData();
 
-    files.forEach((file: string | Blob, index: number) => {
-      formData.append(`file${index}`, file);
-    });
+    await Promise.all(files.map((image: File) => imageCompressor(image))).then(
+      (res) => {
+        res.forEach((file: File, index: number) => {
+          const fle = new File([file], file.name, {
+            lastModified: Date.now(),
+            type: file.type,
+          });
+
+          // console.log(fle);
+          formData.append(`file${index}`, fle);
+        });
+      }
+    );
+
+    // files.forEach((file: File, index: number) => {
+    //   console.log(file);
+    //   formData.append(`file${index}`, file);
+    // });
+    // await Promise.all(
+    //   files.map(
+    //     (image: File, index: number) => formData.append(`file${index}`, imageCompressor(image))
+    //     // imageCompressor(image)
+    //   )
+    // );
 
     const config = {
       headers: {
@@ -51,7 +76,7 @@ function App() {
       },
     };
 
-    axios
+    await axios
       .post(url, formData, config)
       .then((response) => {
         console.log(response.data);
