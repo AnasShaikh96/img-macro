@@ -40,29 +40,117 @@ function App() {
     }
   };
 
+  const resizeImages = async (data: File) => {
+    const ctx = document.createElement("canvas").getContext("2d");
+    const image = new Image();
+    image.onload = function () {
+      ctx?.drawImage(image, 300, 300);
+      console.log(ctx);
+    };
+    image.src = URL.createObjectURL(data);
+
+    return image;
+
+    // const fileReader = new FileReader();
+    // fileReader.onload = function (reader) {
+    //   const img = new Image();
+    //   img.onload = function () {
+    //     const canvas = document.createElement("canvas");
+    //     const maxWidth = 800; // Define the maximum width of the image
+    //     const maxHeight = 600; // Define the maximum height of the image
+    //     let width = image.width;
+    //     let height = image.height;
+
+    //     // Calculate the new dimensions, maintaining the aspect ratio
+    //     if (width > height) {
+    //       if (width > maxWidth) {
+    //         height *= maxWidth / width;
+    //         width = maxWidth;
+    //       }
+    //     } else {
+    //       if (height > maxHeight) {
+    //         width *= maxHeight / height;
+    //         height = maxHeight;
+    //       }
+    //     }
+
+    //     // Set the canvas dimensions to the new dimensions
+    //     canvas.width = width;
+    //     canvas.height = height;
+
+    //     // Draw the resized image on the canvas
+    //     canvas.getContext("2d")?.drawImage(image, 0, 0, width, height);
+    //     const dataUrl = canvas.toDataURL(data.type);
+
+    //     return dataUrl;
+    //     // return ctx?.drawImage(image, 0, 0, width, height);
+    //   };
+    //   console.log(reader.target);
+    //   // img.src
+    // };
+
+    // const blob = new Blob([data]);
+    // const image = new Image();
+    // // image.src = blob;
+    // image.onload = () => {
+    //   const canvas = document.createElement("canvas");
+    //   const maxWidth = 800; // Define the maximum width of the image
+    //   const maxHeight = 600; // Define the maximum height of the image
+    //   let width = image.width;
+    //   let height = image.height;
+
+    //   // Calculate the new dimensions, maintaining the aspect ratio
+    //   if (width > height) {
+    //     if (width > maxWidth) {
+    //       height *= maxWidth / width;
+    //       width = maxWidth;
+    //     }
+    //   } else {
+    //     if (height > maxHeight) {
+    //       width *= maxHeight / height;
+    //       height = maxHeight;
+    //     }
+    //   }
+
+    //   // Set the canvas dimensions to the new dimensions
+    //   canvas.width = width;
+    //   canvas.height = height;
+
+    //   // Draw the resized image on the canvas
+    //   const ctx = canvas.getContext("2d");
+    //   return ctx?.drawImage(image, 0, 0, width, height);
+    // };
+
+    // return image;
+  };
+
   async function handleMultipleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const url = "http://localhost:3000/upload";
     const formData = new FormData();
 
-    await Promise.all(files.map((image: File) => imageCompressor(image))).then(
-      (res) => {
-        res.forEach((file: File, index: number) => {
-          const fle = new File([file], file.name, {
-            lastModified: Date.now(),
-            type: file.type,
-          });
+    // await Promise.all(files.map((image: File) => imageCompressor(image))).then(
+    //   (res) => {
+    //     res.forEach((file: File, index: number) => {
+    //       const fle = new File([file], file.name, {
+    //         lastModified: Date.now(),
+    //         type: file.type,
+    //       });
 
-          // console.log(fle);
-          formData.append(`file${index}`, fle);
-        });
-      }
+    //       // console.log(fle);
+    //       formData.append(`file${index}`, fle);
+    //     });
+    //   }
+    // );
+
+    await Promise.all(files.map((image: File) => resizeImages(image))).then(
+      (res) => console.log(res)
     );
 
-    // files.forEach((file: File, index: number) => {
-    //   console.log(file);
-    //   formData.append(`file${index}`, file);
-    // });
+    files.forEach((file: File, index: number) => {
+      console.log(file.size, resizeImages(file));
+      formData.append(`file${index}`, file);
+    });
     // await Promise.all(
     //   files.map(
     //     (image: File, index: number) => formData.append(`file${index}`, imageCompressor(image))
