@@ -92,12 +92,18 @@ function App() {
       let saveBlob;
 
       canvas.toBlob(function (blob) {
-        console.log(blob);
         saveBlob = blob;
+        // if (blob) {
+        // console.log("blob", blob);
+        // const url = URL.createObjectURL(blob);
+        // image.src = url;
+        // console.log(url);
+        // }
+
         return blob;
       }, file.type);
 
-      console.log(saveBlob);
+      console.log("saveBlob", saveBlob);
 
       return saveBlob;
 
@@ -119,14 +125,23 @@ function App() {
     //   reader.readAsDataURL(file);
     // });
 
-    reader.onload = (readerEvent: any) => {
-      image.onload = () => resize();
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        reject(new Error("rejected"));
+      }
 
-      // console.log(readerEvent.target.result);
+      reader.readAsDataURL(file);
+      reader.onload = async (readerEvent: any) => {
+        image.src = readerEvent.target.result;
+        image.onload = async () => resolve(resize());
+      };
 
-      image.src = readerEvent.target.result;
-    };
-    return reader.readAsDataURL(file);
+      return image;
+
+      // console.log(reader.readAsDataURL(file));
+      // if (file instanceof Blob) {
+      // }
+    });
   };
 
   async function handleMultipleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -150,17 +165,7 @@ function App() {
 
     await Promise.all(
       files.map((image: File) => resizeImage({ maxSize: 5, file: image }))
-    ).then((res) => {
-      if (res) {
-        console.log(res);
-
-        // res.forEach((file: unknown | Blob, i: number) => {
-        //   // if (typeof file === "string") {
-        //   formData.append(`file${i}`, file);
-        //   // }
-        // });
-      }
-    });
+    ).then((res) => console.log(res));
 
     // files.forEach((file: File, index: number) => {
     //   // console.log(file.size, resizeImages(file));
