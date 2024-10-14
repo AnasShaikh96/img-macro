@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import axios from "axios";
 import imageCompression, { Options } from "browser-image-compression";
+import { resizeImg } from "./utils/resizeImg";
 
 function App() {
   const [files, setFiles] = useState<File[]>([]);
@@ -18,8 +19,6 @@ function App() {
       setFiles(images);
     }
   }
-
-  // console.log(files);
 
   const imageCompressor = async (data: File) => {
     const options: Options = {
@@ -103,7 +102,7 @@ function App() {
         return blob;
       }, file.type);
 
-      console.log("saveBlob", saveBlob);
+      // console.log("saveBlob", saveBlob);
 
       return saveBlob;
 
@@ -131,9 +130,9 @@ function App() {
       }
 
       reader.readAsDataURL(file);
-      reader.onload = async (readerEvent: any) => {
+      reader.onload = (readerEvent: any) => {
         image.src = readerEvent.target.result;
-        image.onload = async () => resolve(resize());
+        image.onload = () => resolve(resize());
       };
 
       return image;
@@ -164,8 +163,12 @@ function App() {
     // );
 
     await Promise.all(
-      files.map((image: File) => resizeImage({ maxSize: 5, file: image }))
-    ).then((res) => console.log(res));
+      files.map((image: File) =>
+        //  resizeImage({ maxSize: 5, file: image })
+        resizeImg(image)
+      )
+    )
+    // .then((res) => console.log(res));
 
     // files.forEach((file: File, index: number) => {
     //   // console.log(file.size, resizeImages(file));
