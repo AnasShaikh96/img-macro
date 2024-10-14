@@ -163,11 +163,14 @@ function App() {
     // );
 
     await Promise.all(
-      files.map((image: File) =>
+      files.map(async (image: File) =>
         //  resizeImage({ maxSize: 5, file: image })
-        resizeImg(image)
+        {
+          // console.log(resizeImg(image));
+          await resizeImg(image).then((res) => console.log(res));
+        }
       )
-    )
+    );
     // .then((res) => console.log(res));
 
     // files.forEach((file: File, index: number) => {
