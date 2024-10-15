@@ -37,9 +37,6 @@ app.post('/upload', uploadMiddleware, (req, res) => {
 
   try {
     const files = req.files;
-
-    console.log(files)
-
     const filenames = files.map((file) => file.originalname)
 
     res.status(200).json({
@@ -47,80 +44,8 @@ app.post('/upload', uploadMiddleware, (req, res) => {
       data: filenames
     })
 
-    // const promise1 = new Promise((resolve, reject) => {
-
-    //   files.forEach((file) => {
-    //     const filePath = `uploads/${file.filename}`;
-
-    //     if (filePath && file.path) {
-    //       fs.rename(file.path, filePath, (err) => {
-    //         if (err) {
-    //           throw new Error(err)
-    //         }
-    //       })
-    //     }
-    //   })
-
-    // })
-
-    // promise1.catch(() => )
-    // .catch(() => console.log('resolve nai hua'))
-
-
-    // files.forEach((file) => {
-    //   const filePath = `uploads/${file.filename}`;
-
-    //   if (!filePath) return new Error('File path does not exists')
-
-    //   fs.rename(file.path, filePath, (err) => {
-    //     if (err) {
-    //       throw new Error(err)
-    //     }
-    //   })
-    // })
-    // .then((res) => console.log('then took place'))
-    // .catch((err) => console.log('catch took place'))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // console.log('before for each executed')
-
-    // files.forEach((file) => {
-    //   const filePath = `uploads/${file.filename}`;
-
-    //   if (!filePath) return new Error('File path does not exists')
-
-
-    //   fs.rename(file.path, filePath, (err) => {
-
-    //     console.log('inside for each one by one')
-    //     if (err) {
-    //       throw new Error(err)
-    //     }
-    //   })
-    // });
-
-    // console.log('after for each executed')
-
-
-    // res.status(200).json({ message: 'file uploaded successfully' });
-
   } catch (error) {
-
     res.status(500).json(error)
-
   }
 })
 
