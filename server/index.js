@@ -33,24 +33,45 @@ const {
 } = docx;
 
 
-app.post('/upload', uploadMiddleware, (req, res) => {
+app.post('/upload', uploadMiddleware, async (req, res) => {
 
   try {
     const files = req.files;
 
-    files.forEach((file) => {
-      const filePath = `uploads/${file.filename}`;
+    await new Promise((resolve, reject) => {
 
-      fs.rename(file.path, filePath, (err) => {
-        if (err) {
-          return res.status(500).json({ error: 'Failed to store the file' })
-        }
+      files.forEach((file) => {
+        const filePath = `uploads/${file.filename}`;
+
+        fs.rename(file.path, filePath, (err) => {
+          if (err) {
+            reject(res.status(500).json({ error: 'Failed to store the file' }))
+          }
+        })
       })
 
+      resolve()
 
-    });
+    })
+      .then(() => res.status(200).json({ message: 'file uploaded successfully' }))
+      .catch(() => res.status(500).json({ message: 'An Error occured' }))
 
-    res.status(200).json({ message: 'file uploaded successfully' });
+
+    // new Promise.all(
+    //   files.forEach((file) => {
+    //     const filePath = `uploads/${file.filename}`;
+
+    //     fs.rename(file.path, filePath, (err) => {
+    //       if (err) {
+    //         // res.status(500).json({ error: 'Failed to store the file' })
+    //       }
+    //     })
+    //   })
+    // )
+    // .then(() => res.status(200).json({ message: 'file uploaded successfully' }))
+    // .catch(() => res.status(500).json({ message: 'An Error occured' }))
+
+
   } catch (error) {
 
     return res.status(500).json({ error: 'Failed to store the file' })
@@ -117,7 +138,7 @@ const ImageCallback = () => {
 }
 
 
-const generateTableCells = () => {
+const generateTableCells = async () => {
 
   const folderName = './tmp/uploads/'
   let tempArr = []
@@ -193,6 +214,7 @@ const generateTableCells = () => {
 app.get('/download', async (req, res) => {
 
   try {
+    console.log('hii')
 
     const doc = new Document({
       sections: [{
@@ -202,7 +224,7 @@ app.get('/download', async (req, res) => {
           //   children: ImageCallback()
           // }),
           new Table({
-            rows: generateTableCells(),
+            rows: await generateTableCells(),
             //  [
             //   new TableRow({
             //     children:
@@ -343,7 +365,7 @@ app.get('/download', async (req, res) => {
 
   } catch (error) {
 
-    console.log(error)
+    console.log('yaha se error aara hai', error)
     res.status(500).json(error)
 
   }
