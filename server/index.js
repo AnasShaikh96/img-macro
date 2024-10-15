@@ -33,48 +33,93 @@ const {
 } = docx;
 
 
-app.post('/upload', uploadMiddleware, async (req, res) => {
+app.post('/upload', uploadMiddleware, (req, res) => {
 
   try {
     const files = req.files;
 
-    await new Promise((resolve, reject) => {
+    console.log(files)
 
-      files.forEach((file) => {
-        const filePath = `uploads/${file.filename}`;
+    const filenames = files.map((file) => file.originalname)
 
-        fs.rename(file.path, filePath, (err) => {
-          if (err) {
-            reject(res.status(500).json({ error: 'Failed to store the file' }))
-          }
-        })
-      })
-
-      resolve()
-
+    res.status(200).json({
+      message: 'added files successfully',
+      data: filenames
     })
-      .then(() => res.status(200).json({ message: 'file uploaded successfully' }))
-      .catch(() => res.status(500).json({ message: 'An Error occured' }))
 
+    // const promise1 = new Promise((resolve, reject) => {
 
-    // new Promise.all(
     //   files.forEach((file) => {
     //     const filePath = `uploads/${file.filename}`;
 
-    //     fs.rename(file.path, filePath, (err) => {
-    //       if (err) {
-    //         // res.status(500).json({ error: 'Failed to store the file' })
-    //       }
-    //     })
+    //     if (filePath && file.path) {
+    //       fs.rename(file.path, filePath, (err) => {
+    //         if (err) {
+    //           throw new Error(err)
+    //         }
+    //       })
+    //     }
     //   })
-    // )
-    // .then(() => res.status(200).json({ message: 'file uploaded successfully' }))
-    // .catch(() => res.status(500).json({ message: 'An Error occured' }))
 
+    // })
+
+    // promise1.catch(() => )
+    // .catch(() => console.log('resolve nai hua'))
+
+
+    // files.forEach((file) => {
+    //   const filePath = `uploads/${file.filename}`;
+
+    //   if (!filePath) return new Error('File path does not exists')
+
+    //   fs.rename(file.path, filePath, (err) => {
+    //     if (err) {
+    //       throw new Error(err)
+    //     }
+    //   })
+    // })
+    // .then((res) => console.log('then took place'))
+    // .catch((err) => console.log('catch took place'))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // console.log('before for each executed')
+
+    // files.forEach((file) => {
+    //   const filePath = `uploads/${file.filename}`;
+
+    //   if (!filePath) return new Error('File path does not exists')
+
+
+    //   fs.rename(file.path, filePath, (err) => {
+
+    //     console.log('inside for each one by one')
+    //     if (err) {
+    //       throw new Error(err)
+    //     }
+    //   })
+    // });
+
+    // console.log('after for each executed')
+
+
+    // res.status(200).json({ message: 'file uploaded successfully' });
 
   } catch (error) {
 
-    return res.status(500).json({ error: 'Failed to store the file' })
+    res.status(500).json(error)
 
   }
 })
@@ -138,7 +183,7 @@ const ImageCallback = () => {
 }
 
 
-const generateTableCells = async () => {
+const generateTableCells = () => {
 
   const folderName = './tmp/uploads/'
   let tempArr = []
@@ -224,7 +269,7 @@ app.get('/download', async (req, res) => {
           //   children: ImageCallback()
           // }),
           new Table({
-            rows: await generateTableCells(),
+            rows: generateTableCells(),
             //  [
             //   new TableRow({
             //     children:
