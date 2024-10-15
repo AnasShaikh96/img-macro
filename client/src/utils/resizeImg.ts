@@ -2,22 +2,18 @@ export const resizeImg = async (file: File) => {
   const fileReader = new FileReader();
   const image = new Image();
   const canvas = document.createElement("canvas");
-  const maxSize = 2 * 1024;
+  const maxSize = 512;
 
   const resize = async () => {
     let width = image.width;
     let height = image.height;
 
-    if (width > height) {
-      if (width > maxSize) {
-        height *= maxSize / width;
-        width = maxSize;
-      }
-    } else {
-      if (height > maxSize) {
-        width *= maxSize / height;
-        height = maxSize;
-      }
+    if (width > height && width > maxSize) {
+      height *= maxSize / width;
+      width = maxSize;
+    } else if (height > maxSize) {
+      width *= maxSize / height;
+      height = maxSize;
     }
 
     canvas.width = width;
