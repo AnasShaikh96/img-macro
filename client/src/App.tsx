@@ -1,14 +1,14 @@
 import React, { useRef, useState } from "react";
 import "./App.css";
 import axios from "axios";
-import { resizeImg } from "./utils/resizeImg";
+import { resizeImg } from "./components/utils/resizeImg";
 
 function App() {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const [files, setFiles] = useState<File[]>([]);
-  const [disableUploadBtn, setDisableUploadBtn] = useState<boolean>(false);
-  const [disableDownloadBtn, setDisableDownloadBtn] = useState(true);
+  // const [disableUploadBtn, setDisableUploadBtn] = useState<boolean>(false);
+  // const [disableDownloadBtn, setDisableDownloadBtn] = useState<boolean>(true);
 
   async function handleMultipleChange(
     event: React.ChangeEvent<HTMLInputElement>
@@ -43,7 +43,7 @@ function App() {
       .post(url, formData, config)
       .then(() => {
         setFiles([]);
-        setDisableDownloadBtn(false);
+        // setDisableDownloadBtn(false);
 
         const getInputFile = inputFileRef.current;
         if (getInputFile) {
@@ -96,9 +96,7 @@ function App() {
           multiple
           onChange={handleMultipleChange}
         />
-        <button type="submit" disabled={disableUploadBtn}>
-          Upload
-        </button>
+        <button type="submit">Upload</button>
       </form>
 
       <button onClick={HandleClick} type="button">
