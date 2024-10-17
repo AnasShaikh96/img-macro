@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import "./App.css";
 import axios from "axios";
 import { resizeImg } from "./components/utils/resizeImg";
+import { CreateDoc } from "./components/features/doc-fomatter/component/create-doc";
 
 function App() {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
@@ -87,7 +88,8 @@ function App() {
 
   return (
     <div className="App">
-      <form onSubmit={handleMultipleSubmit}>
+      <CreateDoc />
+      {/* <form onSubmit={handleMultipleSubmit}>
         <h1>React Multiple File Upload</h1>
         <input
           ref={inputFileRef}
@@ -101,7 +103,7 @@ function App() {
 
       <button onClick={HandleClick} type="button">
         Dowload Files
-      </button>
+      </button> */}
     </div>
   );
 }

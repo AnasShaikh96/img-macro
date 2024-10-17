@@ -10,12 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
     "axios": "^1.7.7",
     "browser-image-compression": "^2.0.2",
     "docx": "^8.5.0",
+    "i": "^0.3.7",
+    "npm": "^10.9.0",
     "react": "^18.3.1",
     "react-doc-viewer": "^0.1.14",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
