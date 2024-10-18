@@ -1,9 +1,4 @@
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { useForm } from "react-hook-form";
-// import * as z from "zod";
-// import { Input } from "../../../ui/form";
-
-// const createDocSchema = z.object({
+ // const createDocSchema = z.object({
 //   name: z.string().min(1, { message: "sadasd" }),
 //   age: z.number().min(10, { message: "sad" }),
 // });
