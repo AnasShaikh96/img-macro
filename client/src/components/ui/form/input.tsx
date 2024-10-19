@@ -1,19 +1,29 @@
 import React from "react";
-import { FieldError, FieldErrorsImpl, Merge } from "react-hook-form";
+import {
+  FieldError,
+  FieldErrorsImpl,
+  Merge,
+  UseFormRegisterReturn,
+} from "react-hook-form";
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   className?: string;
-  error?: string | undefined;
-  // error?: FieldError | Merge<FieldError, FieldErrorsImpl> | undefined;
+  error?: FieldError | Merge<FieldError, FieldErrorsImpl> | undefined;
+  registration: Partial<UseFormRegisterReturn>;
 };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, error }, ref) => {
-    console.log(error);
+  ({ className, type, error, registration, ...props }, ref) => {
     return (
       <div>
-        <input className={className} type={type} ref={ref} />
-        <p>{error ?? ""}</p>
+        <input
+          className={className}
+          type={type}
+          ref={ref}
+          {...props}
+          {...registration}
+        />
+        <p>{error?.message?.toString()}</p>
       </div>
     );
   }
