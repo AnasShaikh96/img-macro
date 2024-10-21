@@ -86,13 +86,6 @@ const ImageCallback = () => {
     });
   }
 
-  // return new ImageRun({
-  //   data: fs.readFileSync("./tmp/uploads/cat.jpg"),
-  //   transformation: {
-  //     width: 400,
-  //     height: 400,
-  //   }
-  // })
 
   return tempArr;
 };
