@@ -307,7 +307,6 @@ app.get('/download', async (req, res) => {
     });
     const b64string = await Packer.toBase64String(doc);
 
-    // res.setHeader('Content-Disposition', 'attachment; filename=MyDocument1.docx');
     res.send(Buffer.from(b64string, 'base64'));
   } catch (error) {
     console.log('yaha se error aara hai', error);
