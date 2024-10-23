@@ -10,7 +10,7 @@ import { resizeImg } from "../../../utils/resizeImg";
 export const CreateDoc = () => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
-  // const [files, setFiles] = useState<File[]>([]);
+  const [isDownloadDisabled, setIsDownloadDisabled] = useState(true);
   const {
     register,
     handleSubmit,
@@ -18,14 +18,6 @@ export const CreateDoc = () => {
   } = useForm({
     resolver: zodResolver(fileSchema),
   });
-  // console.log(files);
-
-  // async function HandleFileChanges(event: React.ChangeEvent<HTMLInputElement>) {
-  //   if (event.target.files) {
-  //     const images = Array.from(event.target.files) ?? [];
-  //     setFiles(images);
-  //   }
-  // }
 
   async function HandleUpload(files: FieldValues) {
     const url = "http://localhost:3000/upload";
@@ -50,62 +42,64 @@ export const CreateDoc = () => {
     await axios
       .post(url, formData, config)
       .then(() => {
-        // setFiles([]);
-        // setDisableDownloadBtn(false);
-
         const getInputFile = inputFileRef.current;
-        console.log("getInputFile", getInputFile);
-
         if (getInputFile) {
           getInputFile.value = "";
         }
+        setIsDownloadDisabled(false);
       })
       .catch((error) => {
         console.error("Error uploading files: ", error);
       });
   }
 
-  // const HandleDownload = async () => {
-  //   try {
-  //     await axios
-  //       .get("http://localhost:3000/download", {
-  //         responseType: "blob",
-  //       })
-  //       .then(async (res) => {
-  //         try {
-  //           const blob = await res.data;
+  const HandleDownload = async () => {
+    try {
+      await axios
+        .get("http://localhost:3000/download", {
+          responseType: "blob",
+        })
+        .then(async (res) => {
+          try {
+            const blob = await res.data;
 
-  //           const link = document.createElement("a");
-  //           const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            const url = window.URL.createObjectURL(blob);
 
-  //           link.href = url;
-  //           link.download = "MyDoc.docx";
+            link.href = url;
+            link.download = "MyDoc.docx";
 
-  //           document.body.appendChild(link);
-  //           link.click();
+            document.body.appendChild(link);
+            link.click();
 
-  //           window.URL.revokeObjectURL(url);
-  //           document.body.removeChild(link);
-  //         } catch (error) {
-  //           console.log(error);
-  //         }
-  //       });
-  //   } catch (error) {
-  //     console.error("Error downloading document:", error);
-  //   }
-  // };
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+          } catch (error) {
+            console.log(error);
+          }
+        });
+    } catch (error) {
+      console.error("Error downloading document:", error);
+    }
+  };
 
   return (
-    <form onSubmit={handleSubmit((d) => HandleUpload(d.file))}>
-      <Input
-        ref={inputFileRef}
-        multiple
-        type="file"
-        registration={register("file")}
-        error={errors["file"]}
-        // onChange={HandleFileChanges}
+    <>
+      <form onSubmit={handleSubmit((d) => HandleUpload(d.file))}>
+        <Input
+          ref={inputFileRef}
+          multiple
+          type="file"
+          registration={register("file")}
+          error={errors["file"]}
+        />
+        <Button type="submit" />
+      </form>
+      <Button
+        type="button"
+        onClick={HandleDownload}
+        disabled={isDownloadDisabled}
       />
-      <Button type="submit" />
-    </form>
+    </>
   );
 };
