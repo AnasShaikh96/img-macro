@@ -1,12 +1,14 @@
 import React from "react";
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  text?: string;
+};
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, ...props }, ref) => {
+  ({ text, className, ...props }, ref) => {
     return (
       <button className={className} ref={ref} {...props}>
-        Button
+        {text}
       </button>
     );
   }

@@ -93,9 +93,10 @@ export const CreateDoc = () => {
           registration={register("file")}
           error={errors["file"]}
         />
-        <Button type="submit" />
+        <Button type="submit" text="Upload" />
       </form>
       <Button
+        text="Download"
         type="button"
         onClick={HandleDownload}
         disabled={isDownloadDisabled}
