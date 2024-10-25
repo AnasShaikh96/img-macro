@@ -1,7 +1,7 @@
 import * as z from "zod";
 
 const ACCEPTED_IMG_TYPES = ["image/png", 'image/jpeg', 'image/jpg'];
-const MAX_FILE_SIZE = 1 * 1024 * 1024
+const MAX_FILE_SIZE = 5 * 1024 * 1024
 
 
 export const fileSchema = z.object({
