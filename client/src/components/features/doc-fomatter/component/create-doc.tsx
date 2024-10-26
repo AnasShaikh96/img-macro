@@ -10,7 +10,7 @@ import { resizeImg } from "../../../utils/resizeImg";
 export const CreateDoc = () => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
-  const [isDownloadDisabled, setIsDownloadDisabled] = useState(true);
+  const [isDownloadDisabled, setIsDownloadDisabled] = useState<boolean>(true);
   const {
     register,
     handleSubmit,
