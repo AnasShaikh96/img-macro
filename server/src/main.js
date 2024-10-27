@@ -54,10 +54,7 @@ const uploadMiddleware = (req, res, next) => {
       return res.status(400).json({ errors })
     }
 
-
     req.files = files
-
-
     next();
 
   })
