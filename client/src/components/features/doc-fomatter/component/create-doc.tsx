@@ -6,6 +6,7 @@ import { Button } from "../../../ui/button/button";
 import { useRef, useState } from "react";
 import axios from "axios";
 import { resizeImg } from "../../../utils/resizeImg";
+import './create-doc.css'
 
 export const CreateDoc = () => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
@@ -84,8 +85,8 @@ export const CreateDoc = () => {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit((d) => HandleUpload(d.file))}>
+    <div className="create-doc-wrapper">
+      <form className="create-doc-form" onSubmit={handleSubmit((d) => HandleUpload(d.file))}>
         <Input
           ref={inputFileRef}
           multiple
@@ -96,11 +97,12 @@ export const CreateDoc = () => {
         <Button type="submit" text="Upload" />
       </form>
       <Button
+      className="download-btn"
         text="Download"
         type="button"
         onClick={HandleDownload}
         disabled={isDownloadDisabled}
       />
-    </>
+    </div>
   );
 };

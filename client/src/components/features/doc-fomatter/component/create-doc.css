@@ -1,0 +1,32 @@
+.create-doc-wrapper {
+  padding: 30px;
+  border: 1px solid #eee;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 9px;
+  margin: 40px auto;
+}
+
+.create-doc-form {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.create-doc-wrapper button {
+  border: none;
+  padding: 7px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.create-doc-wrapper button:disabled {
+  cursor: not-allowed;
+}
+
+.download-btn {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}
