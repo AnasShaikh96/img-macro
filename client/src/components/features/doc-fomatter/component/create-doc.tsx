@@ -3,12 +3,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../../ui/form";
 import { fileSchema } from "../api/create-doc";
 import { Button } from "../../../ui/button/button";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { resizeImg } from "../../../utils/resizeImg";
-import './create-doc.css'
+import "./create-doc.css";
+import { v4 as uuidv4 } from "uuid";
 
 export const CreateDoc = () => {
+  const uuid = uuidv4();
+  const urlParams = new URLSearchParams(window.location.search);
+
+  const [sessionId, setSessionId] = useState<string>("");
+
+  useEffect(() => {
+    if (!urlParams.get("session")) {
+      urlParams.set("session", uuid);
+      window.location.search = urlParams.toString();
+    }
+    setSessionId(urlParams.get("session")?.toString() ?? "");
+  }, []);
+
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const [isDownloadDisabled, setIsDownloadDisabled] = useState<boolean>(true);
@@ -32,6 +46,7 @@ export const CreateDoc = () => {
       res.forEach((file: File, index: number) => {
         formData.append(`file${index}`, file);
       });
+      formData.append("sessionId", sessionId);
     });
 
     const config = {
@@ -47,6 +62,7 @@ export const CreateDoc = () => {
         if (getInputFile) {
           getInputFile.value = "";
         }
+
         setIsDownloadDisabled(false);
       })
       .catch((error) => {
@@ -86,7 +102,10 @@ export const CreateDoc = () => {
 
   return (
     <div className="create-doc-wrapper">
-      <form className="create-doc-form" onSubmit={handleSubmit((d) => HandleUpload(d.file))}>
+      <form
+        className="create-doc-form"
+        onSubmit={handleSubmit((d) => HandleUpload(d.file))}
+      >
         <Input
           ref={inputFileRef}
           multiple
@@ -97,7 +116,7 @@ export const CreateDoc = () => {
         <Button type="submit" text="Upload" />
       </form>
       <Button
-      className="download-btn"
+        className="download-btn"
         text="Download"
         type="button"
         onClick={HandleDownload}
