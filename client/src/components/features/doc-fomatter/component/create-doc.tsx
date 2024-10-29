@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../../ui/form";
 import { fileSchema } from "../api/create-doc";
 import { Button } from "../../../ui/button/button";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import axios from "axios";
 import { resizeImg } from "../../../utils/resizeImg";
 import "./create-doc.css";
@@ -12,16 +12,18 @@ import { v4 as uuidv4 } from "uuid";
 export const CreateDoc = () => {
   const uuid = uuidv4();
   const urlParams = new URLSearchParams(window.location.search);
+  let sessionId = "";
 
-  const [sessionId, setSessionId] = useState<string>("");
+  // const [sessionId, setSessionId] = useState<string>("");
 
-  useEffect(() => {
-    if (!urlParams.get("session")) {
-      urlParams.set("session", uuid);
-      window.location.search = urlParams.toString();
-    }
-    setSessionId(urlParams.get("session")?.toString() ?? "");
-  }, []);
+  // useEffect(() => {
+  if (!urlParams.get("session")) {
+    urlParams.set("session", uuid);
+    window.location.search = urlParams.toString();
+  }
+  sessionId = urlParams.get("session")?.toString() ?? "";
+  // setSessionId(urlParams.get("session")?.toString() ?? "");
+  // }, []);
 
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
@@ -101,27 +103,38 @@ export const CreateDoc = () => {
   };
 
   return (
-    <div className="create-doc-wrapper">
-      <form
-        className="create-doc-form"
-        onSubmit={handleSubmit((d) => HandleUpload(d.file))}
+    <>
+      <button
+        className="session-btn"
+        onClick={() => {
+          urlParams.delete("session");
+          window.location.search = "";
+        }}
       >
-        <Input
-          ref={inputFileRef}
-          multiple
-          type="file"
-          registration={register("file")}
-          error={errors["file"]}
+        New Session
+      </button>
+      <div className="create-doc-wrapper">
+        <form
+          className="create-doc-form"
+          onSubmit={handleSubmit((d) => HandleUpload(d.file))}
+        >
+          <Input
+            ref={inputFileRef}
+            multiple
+            type="file"
+            registration={register("file")}
+            error={errors["file"]}
+          />
+          <Button type="submit" text="Upload" />
+        </form>
+        <Button
+          className="download-btn"
+          text="Download"
+          type="button"
+          onClick={HandleDownload}
+          disabled={isDownloadDisabled}
         />
-        <Button type="submit" text="Upload" />
-      </form>
-      <Button
-        className="download-btn"
-        text="Download"
-        type="button"
-        onClick={HandleDownload}
-        disabled={isDownloadDisabled}
-      />
-    </div>
+      </div>
+    </>
   );
 };
