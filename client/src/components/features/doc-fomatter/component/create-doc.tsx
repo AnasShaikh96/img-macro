@@ -45,10 +45,11 @@ export const CreateDoc = () => {
         async (image: File) => (await resizeImg(image)) as File
       )
     ).then((res: File[]) => {
+      formData.append("sessionId", sessionId);
+
       res.forEach((file: File, index: number) => {
         formData.append(`file${index}`, file);
       });
-      formData.append("sessionId", sessionId);
     });
 
     const config = {

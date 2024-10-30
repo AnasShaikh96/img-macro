@@ -4,7 +4,17 @@ const path = require('path');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '/tmp/uploads'))
+    // console.log()
+
+    const session = req.body.sessionId;
+    let pathname = '/tmp/uploads/' + session;
+    // console.log(pathname)
+    if (!fs.existsSync(pathname)) {
+      fs.mkdirSync(pathname, { recursive: true })
+      cb(null, path.join(__dirname, pathname))
+    }
+
+
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname);
@@ -16,15 +26,12 @@ const upload = multer({ storage: storage });
 
 const uploadMiddleware = (req, res, next) => {
 
-
   upload.any()(req, res, (err) => {
 
     if (err) {
-
       console.log('err', err)
       return res.status(400).json({ error: err.message })
     }
-
 
     const files = req.files;
     const errors = [];

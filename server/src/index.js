@@ -158,6 +158,9 @@ const generateTableCells = () => {
 };
 
 app.get('/download', async (req, res) => {
+
+  const session = req.body
+
   try {
     // console.log('hii');
 
