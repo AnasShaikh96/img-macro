@@ -4,8 +4,6 @@ const path = require('path');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // console.log()
-
     const session = req.body.sessionId;
     let pathname = '/tmp/uploads/' + session;
     // console.log(pathname)
