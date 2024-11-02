@@ -14,20 +14,17 @@ export const CreateDoc = () => {
   const urlParams = new URLSearchParams(window.location.search);
   let sessionId = "";
 
-  // const [sessionId, setSessionId] = useState<string>("");
-
-  // useEffect(() => {
   if (!urlParams.get("session")) {
     urlParams.set("session", uuid);
     window.location.search = urlParams.toString();
   }
   sessionId = urlParams.get("session")?.toString() ?? "";
-  // setSessionId(urlParams.get("session")?.toString() ?? "");
-  // }, []);
 
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const [isDownloadDisabled, setIsDownloadDisabled] = useState<boolean>(true);
+  const [docName, setDocName] = useState("Document");
+
   const {
     register,
     handleSubmit,
@@ -90,7 +87,7 @@ export const CreateDoc = () => {
             const url = window.URL.createObjectURL(blob);
 
             link.href = url;
-            link.download = "MyDoc.docx";
+            link.download = `${docName}.docx`;
 
             document.body.appendChild(link);
             link.click();
@@ -123,13 +120,25 @@ export const CreateDoc = () => {
           onSubmit={handleSubmit((d) => HandleUpload(d.file))}
         >
           <Input
-            ref={inputFileRef}
-            multiple
-            type="file"
-            registration={register("file")}
-            error={errors["file"]}
+            type="text"
+            defaultValue={docName}
+            onChange={(e) => console.log("e", e)}
+            registration={register("text", {
+              onChange: (e) => setDocName(e.target.value),
+            })}
+            error={errors["text"]}
           />
-          <Button type="submit" text="Upload" />
+
+          <div className="form-field-wrap">
+            <Input
+              ref={inputFileRef}
+              multiple
+              type="file"
+              registration={register("file")}
+              error={errors["file"]}
+            />
+            <Button type="submit" text="Upload" />
+          </div>
         </form>
         <Button
           className="download-btn"

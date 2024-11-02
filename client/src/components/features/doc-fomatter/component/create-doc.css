@@ -9,8 +9,8 @@
 
 .create-doc-form {
   display: flex;
-  align-items: start;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 20px;
 }
 
 button {
@@ -34,4 +34,9 @@ button {
 .session-btn {
   display: block;
   margin: 20px auto;
+}
+
+.form-field-wrap {
+  display: flex;
+  justify-content: space-between;
 }
