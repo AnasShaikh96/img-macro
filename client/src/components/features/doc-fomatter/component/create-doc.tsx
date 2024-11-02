@@ -77,6 +77,9 @@ export const CreateDoc = () => {
     try {
       await axios
         .get("http://localhost:3000/download", {
+          params: {
+            session: sessionId,
+          },
           responseType: "blob",
         })
         .then(async (res) => {

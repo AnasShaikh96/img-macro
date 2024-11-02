@@ -90,8 +90,8 @@ const ImageCallback = () => {
   return tempArr;
 };
 
-const generateTableCells = () => {
-  const folderName = './tmp/uploads/';
+const generateTableCells = (folderName) => {
+  // const folderName = './tmp/uploads/32dc259c-3743-468a-adee-747fa29253aa/';
   let tempArr = [];
 
   if (!fs.existsSync(folderName)) {
@@ -159,7 +159,15 @@ const generateTableCells = () => {
 
 app.get('/download', async (req, res) => {
 
-  const session = req.body
+  const session = req.query.session;
+
+  if (!session) {
+    res.status(500).json({
+      message: 'Cannot find session'
+    });
+  }
+
+  const filePath = `./tmp/uploads/${session}`;
 
   try {
     // console.log('hii');
@@ -173,7 +181,7 @@ app.get('/download', async (req, res) => {
             //   children: ImageCallback()
             // }),
             new Table({
-              rows: generateTableCells(),
+              rows: generateTableCells(filePath),
               //  [
               //   new TableRow({
               //     children:
