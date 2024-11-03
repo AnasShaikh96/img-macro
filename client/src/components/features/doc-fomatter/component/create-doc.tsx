@@ -34,7 +34,7 @@ export const CreateDoc = () => {
   });
 
   async function HandleUpload(files: FieldValues) {
-    const url = "http://localhost:3000/upload";
+    const url = "http://localhost:3001/upload";
     const formData = new FormData();
 
     await Promise.all(
@@ -73,7 +73,7 @@ export const CreateDoc = () => {
   const HandleDownload = async () => {
     try {
       await axios
-        .get("http://localhost:3000/download", {
+        .get("http://localhost:3001/download", {
           params: {
             session: sessionId,
           },
