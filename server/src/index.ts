@@ -1,0 +1,19 @@
+import express from 'express';
+import cors from 'cors';
+
+const app = express();
+
+const initializeExpress = () => {
+  app.use(cors());
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.get('/', (req, res) => {
+    res.status(200).json({
+      message: 'hello',
+    });
+  });
+
+  app.listen(3001, () => console.log('Server Up at 3001'));
+};
+
+initializeExpress();
