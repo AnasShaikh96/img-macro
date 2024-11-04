@@ -9,7 +9,7 @@ const initializeExpress = () => {
   app.use(express.urlencoded({ extended: true }));
   app.get('/', (req, res) => {
     res.status(200).json({
-      message: 'hello',
+      message: 'hello world',
     });
   });
 
