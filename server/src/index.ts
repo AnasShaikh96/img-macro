@@ -14,7 +14,7 @@ const initializeExpress = () => {
     });
   });
 
-  app.listen(3001, () => console.log('Server Up at 3001'));
+  app.listen(3001, () => console.log('Server Up at 3000'));
 };
 
 initializeExpress();
