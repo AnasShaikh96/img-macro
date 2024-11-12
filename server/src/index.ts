@@ -8,11 +8,11 @@ const initializeExpress = () => {
   app.use(express.json());
 
   app.use(express.urlencoded({ extended: true }));
-  app.get('/', (req, res) => {
-    res.status(200).json({
-      message: 'hello world',
-    });
-  });
+  // app.get('/', (req, res) => {
+  //   res.status(200).json({
+  //     message: 'hello world',
+  //   });
+  // });
 
   app.listen(3001, () => console.log('Server Up at 3000'));
 };
