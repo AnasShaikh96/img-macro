@@ -5,4 +5,12 @@ const CompanyModel = {
     type: DataTypes.INTEGER,
     autoIncrement: true,
   },
+  name: {
+    type: DataTypes.STRING,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
 };
