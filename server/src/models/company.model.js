@@ -26,17 +26,17 @@ const companySchema = new Schema({
 }, { timestamps: true })
 
 
-companySchema.pre("save", function () {
-  if (!isModified(this.password)) {
-    this.password = bcrypt.hash(this.password, 10)
-  }
+companySchema.pre('save', async function (next) {
+  if (!this.isModified()) return next()
+  this.password = await bcrypt.hash(this.password, 10)
+  next()
 })
 
-companySchema.method.checkPassword = function (password) {
+companySchema.methods.checkPassword = async function (password) {
   return bcrypt.compare(password, this.password)
 }
 
-companySchema.method.generateAccessToken = function () {
+companySchema.methods.generateAccessToken = function () {
 
   return jwt.sign(
     {
@@ -50,7 +50,7 @@ companySchema.method.generateAccessToken = function () {
     })
 }
 
-companySchema.method.generateRefreshToken = function () {
+companySchema.methods.generateRefreshToken = function () {
 
   return jwt.sign(
     {

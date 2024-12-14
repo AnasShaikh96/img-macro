@@ -1,5 +1,6 @@
 import express from "express"
 import mongoose from "mongoose"
+import cookieParser from "cookie-parser"
 import dotenv from 'dotenv'
 dotenv.config({
   path: './.env'
@@ -8,7 +9,7 @@ dotenv.config({
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-
+app.use(cookieParser())
 
 app.listen(process.env.PORT, () => console.log('Server is up at ' + process.env.PORT))
 
