@@ -2,7 +2,7 @@ import express from "express"
 import mongoose from "mongoose"
 import dotenv from 'dotenv'
 dotenv.config({
-  path: '../.env'
+  path: './.env'
 })
 
 const app = express()
@@ -18,3 +18,10 @@ async function connectDb() {
 }
 
 connectDb();
+
+
+// ROUTES
+
+import CompanyRoutes from "./routes/company.routes.js";
+
+app.use('/api/v1', CompanyRoutes)
