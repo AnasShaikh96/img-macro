@@ -17,6 +17,12 @@ const companySchema = new Schema({
     required: true,
     min: [6, "Minimum 6 characters required"]
   },
+  documetns: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Document'
+    }
+  ],
   accessToken: {
     type: String
   },

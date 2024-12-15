@@ -74,8 +74,6 @@ const loginCompany = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, updatedCompany, "Logged in Successfully")
     )
-
-
 })
 
 
