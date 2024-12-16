@@ -24,5 +24,59 @@ connectDb();
 // ROUTES
 
 import CompanyRoutes from "./routes/company.routes.js";
-
+import uploadMiddleware from "./main.js"
+import { generateTableCells } from "./utils/generateTableCells.js"
 app.use('/api/v1', CompanyRoutes)
+
+
+app.post('/upload', uploadMiddleware, (req, res) => {
+  try {
+    const files = req.files;
+    const filenames = files.map((file) => file.originalname);
+
+    res.status(200).json({
+      message: 'added files successfully',
+      data: filenames,
+    });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+app.get('/download', async (req, res) => {
+
+  const session = req.query.session;
+
+  if (!session) {
+    res.status(500).json({
+      message: 'Cannot find session'
+    });
+  }
+
+  const filePath = `./tmp/uploads/${session}`;
+
+  try {
+    const doc = new Document({
+      sections: [
+        {
+          children: [
+            new Paragraph('Hello World'),
+            new Table({
+              rows: generateTableCells(filePath),
+              width: {
+                size: 5000,
+                type: WidthType.DXA,
+              },
+            }),
+          ],
+        },
+      ],
+    });
+    const b64string = await Packer.toBase64String(doc);
+
+    res.send(Buffer.from(b64string, 'base64'));
+  } catch (error) {
+    console.log('yaha se error aara hai', error);
+    res.status(500).json(error);
+  }
+});

@@ -6,6 +6,7 @@ const cors = require('cors');
 const uploadMiddleware = require('./main');
 const path = require('path');
 const request = require('request');
+const { generateTableCells } = require('./utils/generateTableCells');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -45,117 +46,50 @@ app.post('/upload', uploadMiddleware, (req, res) => {
   }
 });
 
-const ImageCallback = () => {
-  const folderName = './tmp/uploads/';
-  let tempArr = [];
+// const ImageCallback = () => {
+//   const folderName = './tmp/uploads/';
+//   let tempArr = [];
 
-  if (fs.existsSync(folderName)) {
-    fs.readdirSync(folderName).forEach((file) => {
-      const path = folderName + file;
-      console.log(path);
+//   if (fs.existsSync(folderName)) {
+//     fs.readdirSync(folderName).forEach((file) => {
+//       const path = folderName + file;
+//       console.log(path);
 
-      // const para = new Paragraph({
-      //   children: [
-      //     new ImageRun({
-      //       data: fs.readFileSync(path),
-      //       transformation: {
-      //         width: 200,
-      //         height: 200,
-      //       },
-      //       floating: {
-      //         horizontalPosition: {
-      //           offset: 1014400,
-      //         },
-      //         verticalPosition: {
-      //           offset: 1014400,
-      //         },
-      //       },
-      //     }),
-      //   ],
-      // });
+//       // const para = new Paragraph({
+//       //   children: [
+//       //     new ImageRun({
+//       //       data: fs.readFileSync(path),
+//       //       transformation: {
+//       //         width: 200,
+//       //         height: 200,
+//       //       },
+//       //       floating: {
+//       //         horizontalPosition: {
+//       //           offset: 1014400,
+//       //         },
+//       //         verticalPosition: {
+//       //           offset: 1014400,
+//       //         },
+//       //       },
+//       //     }),
+//       //   ],
+//       // });
 
-      const para = new ImageRun({
-        data: fs.readFileSync(path),
-        transformation: {
-          width: 400,
-          height: 400,
-        },
-      });
+//       const para = new ImageRun({
+//         data: fs.readFileSync(path),
+//         transformation: {
+//           width: 400,
+//           height: 400,
+//         },
+//       });
 
-      tempArr.push(para);
-    });
-  }
+//       tempArr.push(para);
+//     });
+//   }
 
 
-  return tempArr;
-};
-
-const generateTableCells = (folderName) => {
-  // const folderName = './tmp/uploads/32dc259c-3743-468a-adee-747fa29253aa/';
-  let tempArr = [];
-
-  if (!fs.existsSync(folderName)) {
-    return tempArr;
-  }
-
-  const storeCells = [];
-  const files = fs.readdirSync(folderName);
-
-  const createTableCell = (path) => {
-    return new TableCell({
-      children: [
-        new Paragraph({
-          children: [
-            new ImageRun({
-              data: fs.readFileSync(path),
-              transformation: {
-                width: 300,
-                height: 300,
-              },
-            }),
-          ],
-        }),
-        new Paragraph('hello'),
-      ],
-      verticalAlign: VerticalAlign.CENTER,
-      margins: {
-        // top: convertInchesToTwip(0.69),
-        // bottom: convertInchesToTwip(0.69),
-        // left: convertInchesToTwip(0.69),
-        // right: convertInchesToTwip(0.69),
-      },
-      borders: {
-        top: {
-          style: BorderStyle.SINGLE,
-          size: 1,
-          color: '000000',
-        },
-        bottom: {
-          style: BorderStyle.SINGLE,
-          size: 5,
-          color: '000000',
-        },
-      },
-    });
-  };
-
-  files.forEach((file) => {
-    const filePath = path.join(folderName, file);
-    const cell = createTableCell(filePath);
-    storeCells.push(cell);
-  });
-
-  for (let i = 0; i < storeCells.length; i += 2) {
-    if (storeCells && storeCells[i]) {
-      const row = new TableRow({
-        children: storeCells[i + 1] ? [storeCells[i], storeCells[i + 1]] : [storeCells[i]],
-      });
-      tempArr.push(row);
-    }
-  }
-
-  return tempArr;
-};
+//   return tempArr;
+// };
 
 app.get('/download', async (req, res) => {
 
@@ -326,83 +260,83 @@ app.get('/download', async (req, res) => {
 });
 
 // https://stackoverflow.com/questions/12740659/downloading-images-with-node-js
-const download = (uri, filename, callback) => {
-  request.head(uri, (err, res, body) => {
-    request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-  });
-};
+// const download = (uri, filename, callback) => {
+//   request.head(uri, (err, res, body) => {
+//     request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+//   });
+// };
 
-const URL =
-  'https://raw.githubusercontent.com/dolanmiu/docx/ccd655ef8be3828f2c4b1feb3517a905f98409d9/demo/images/cat.jpg';
+// const URL =
+//   'https://raw.githubusercontent.com/dolanmiu/docx/ccd655ef8be3828f2c4b1feb3517a905f98409d9/demo/images/cat.jpg';
 
-app.get('/', (req, res) => {
-  download(URL, 'cat.jpg', async () => {
-    const doc = new Document({
-      sections: [
-        {
-          children: [
-            new Paragraph('Hello World'),
-            new Paragraph({
-              children: [
-                new ImageRun({
-                  data: fs.readFileSync('./cat.jpg'),
-                  transformation: {
-                    width: 100,
-                    height: 100,
-                  },
-                }),
-              ],
-            }),
-            new Paragraph({
-              children: [
-                new ImageRun({
-                  data: fs.readFileSync('./cat.jpg'),
-                  transformation: {
-                    width: 200,
-                    height: 200,
-                  },
-                  floating: {
-                    horizontalPosition: {
-                      offset: 1014400,
-                    },
-                    verticalPosition: {
-                      offset: 1014400,
-                    },
-                  },
-                }),
-              ],
-            }),
-            new Paragraph({
-              children: [
-                new ImageRun({
-                  data: fs.readFileSync('./cat.jpg'),
-                  transformation: {
-                    width: 200,
-                    height: 200,
-                  },
-                  floating: {
-                    horizontalPosition: {
-                      relative: HorizontalPositionRelativeFrom.PAGE,
-                      align: HorizontalPositionAlign.RIGHT,
-                    },
-                    verticalPosition: {
-                      relative: VerticalPositionRelativeFrom.PAGE,
-                      align: VerticalPositionAlign.BOTTOM,
-                    },
-                  },
-                }),
-              ],
-            }),
-          ],
-        },
-      ],
-    });
+// app.get('/', (req, res) => {
+//   download(URL, 'cat.jpg', async () => {
+//     const doc = new Document({
+//       sections: [
+//         {
+//           children: [
+//             new Paragraph('Hello World'),
+//             new Paragraph({
+//               children: [
+//                 new ImageRun({
+//                   data: fs.readFileSync('./cat.jpg'),
+//                   transformation: {
+//                     width: 100,
+//                     height: 100,
+//                   },
+//                 }),
+//               ],
+//             }),
+//             new Paragraph({
+//               children: [
+//                 new ImageRun({
+//                   data: fs.readFileSync('./cat.jpg'),
+//                   transformation: {
+//                     width: 200,
+//                     height: 200,
+//                   },
+//                   floating: {
+//                     horizontalPosition: {
+//                       offset: 1014400,
+//                     },
+//                     verticalPosition: {
+//                       offset: 1014400,
+//                     },
+//                   },
+//                 }),
+//               ],
+//             }),
+//             new Paragraph({
+//               children: [
+//                 new ImageRun({
+//                   data: fs.readFileSync('./cat.jpg'),
+//                   transformation: {
+//                     width: 200,
+//                     height: 200,
+//                   },
+//                   floating: {
+//                     horizontalPosition: {
+//                       relative: HorizontalPositionRelativeFrom.PAGE,
+//                       align: HorizontalPositionAlign.RIGHT,
+//                     },
+//                     verticalPosition: {
+//                       relative: VerticalPositionRelativeFrom.PAGE,
+//                       align: VerticalPositionAlign.BOTTOM,
+//                     },
+//                   },
+//                 }),
+//               ],
+//             }),
+//           ],
+//         },
+//       ],
+//     });
 
-    const b64string = await Packer.toBase64String(doc);
+//     const b64string = await Packer.toBase64String(doc);
 
-    res.setHeader('Content-Disposition', 'attachment; filename=My Document.docx');
-    res.send(Buffer.from(b64string, 'base64'));
-  });
-});
+//     res.setHeader('Content-Disposition', 'attachment; filename=My Document.docx');
+//     res.send(Buffer.from(b64string, 'base64'));
+//   });
+// });
 
 app.listen(3001, () => console.log('Server up at 3001'));
