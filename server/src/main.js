@@ -6,8 +6,9 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const session = req.body.sessionId;
     const pathname = `/tmp/uploads/${session}/`;
-    const relFilePath = path.join(__dirname, pathname)
 
+    console.log(__dirname)
+    const relFilePath = '';
     if (!fs.existsSync(relFilePath)) fs.mkdirSync(relFilePath)
 
     cb(null, path.join(relFilePath))

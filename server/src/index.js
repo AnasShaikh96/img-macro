@@ -2,6 +2,7 @@ import express from "express"
 import mongoose from "mongoose"
 import cookieParser from "cookie-parser"
 import dotenv from 'dotenv'
+import cors from "cors"
 dotenv.config({
   path: './.env'
 })
@@ -10,6 +11,7 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
+app.use(cors())
 
 app.listen(process.env.PORT, () => console.log('Server is up at ' + process.env.PORT))
 
@@ -24,8 +26,10 @@ connectDb();
 // ROUTES
 
 import CompanyRoutes from "./routes/company.routes.js";
-import uploadMiddleware from "./main.js"
+import { uploadMiddleware } from "./middlewares/multer.middleware.js"
 import { generateTableCells } from "./utils/generateTableCells.js"
+import { Document, Packer, Paragraph, Table, WidthType } from "docx"
+import * as fs from "fs"
 app.use('/api/v1', CompanyRoutes)
 
 
@@ -53,7 +57,7 @@ app.get('/download', async (req, res) => {
     });
   }
 
-  const filePath = `./tmp/uploads/${session}`;
+  const filePath = `./src/tmp/uploads/${session}`;
 
   try {
     const doc = new Document({

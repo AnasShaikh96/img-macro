@@ -6,10 +6,14 @@ import {
   BorderStyle,
   VerticalAlign,
 } from 'docx'
+import * as fs from "fs"
+import path from 'path';
 
 export const generateTableCells = (folderName) => {
   // const folderName = './tmp/uploads/32dc259c-3743-468a-adee-747fa29253aa/';
   let tempArr = [];
+
+  console.log(folderName, fs.existsSync(folderName))
 
   if (!fs.existsSync(folderName)) {
     return tempArr;
@@ -17,6 +21,7 @@ export const generateTableCells = (folderName) => {
 
   const storeCells = [];
   const files = fs.readdirSync(folderName);
+  console.log(files)
 
   const createTableCell = (path) => {
     return new TableCell({
