@@ -1,14 +1,15 @@
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
+import multer from "multer";
+import path from "path";
+import * as fs from "fs"
+import { __dirname } from "../../config.js";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const session = req.body.sessionId;
-    const pathname = `/tmp/uploads/${session}/`;
+    const pathname = `/src/tmp/uploads/${session}/`;
 
-    console.log(__dirname)
-    const relFilePath = '';
+    const relFilePath = path.join(__dirname, pathname)
+
     if (!fs.existsSync(relFilePath)) fs.mkdirSync(relFilePath)
 
     cb(null, path.join(relFilePath))
@@ -21,7 +22,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
-const uploadMiddleware = (req, res, next) => {
+export const uploadMiddleware = (req, res, next) => {
 
   upload.any()(req, res, (err) => {
 
@@ -64,7 +65,3 @@ const uploadMiddleware = (req, res, next) => {
   })
 }
 
-
-
-
-module.exports = uploadMiddleware;

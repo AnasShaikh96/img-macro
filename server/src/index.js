@@ -1,35 +1,37 @@
-const express = require('express');
-const app = express();
-const docx = require('docx');
-const fs = require('fs');
-const cors = require('cors');
-const uploadMiddleware = require('./main');
-const path = require('path');
-const request = require('request');
+import express from "express"
+import mongoose from "mongoose"
+import cookieParser from "cookie-parser"
+import dotenv from 'dotenv'
+import cors from "cors"
+dotenv.config({
+  path: './.env'
+})
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+const app = express()
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
+app.use(cors())
 
-const {
-  Document,
-  HorizontalPositionAlign,
-  HorizontalPositionRelativeFrom,
-  ImageRun,
-  Media,
-  Packer,
-  Paragraph,
-  VerticalPositionAlign,
-  VerticalPositionRelativeFrom,
-  Table,
-  TableRow,
-  TableCell,
-  convertInchesToTwip,
-  WidthType,
-  BorderStyle,
-  AlignmentType,
-  VerticalAlign,
-} = docx;
+app.listen(process.env.PORT, () => console.log('Server is up at ' + process.env.PORT))
+
+async function connectDb() {
+  await mongoose.connect("mongodb://localhost:27017/img-macro")
+    .then(() => console.log('DB is Connected')).catch((err) => console.log(err))
+}
+
+connectDb();
+
+
+// ROUTES
+
+import CompanyRoutes from "./routes/company.routes.js";
+import { uploadMiddleware } from "./middlewares/multer.middleware.js"
+import { generateTableCells } from "./utils/generateTableCells.js"
+import { Document, Packer, Paragraph, Table, WidthType } from "docx"
+import * as fs from "fs"
+app.use('/api/v1', CompanyRoutes)
+
 
 app.post('/upload', uploadMiddleware, (req, res) => {
   try {
@@ -45,118 +47,6 @@ app.post('/upload', uploadMiddleware, (req, res) => {
   }
 });
 
-const ImageCallback = () => {
-  const folderName = './tmp/uploads/';
-  let tempArr = [];
-
-  if (fs.existsSync(folderName)) {
-    fs.readdirSync(folderName).forEach((file) => {
-      const path = folderName + file;
-      console.log(path);
-
-      // const para = new Paragraph({
-      //   children: [
-      //     new ImageRun({
-      //       data: fs.readFileSync(path),
-      //       transformation: {
-      //         width: 200,
-      //         height: 200,
-      //       },
-      //       floating: {
-      //         horizontalPosition: {
-      //           offset: 1014400,
-      //         },
-      //         verticalPosition: {
-      //           offset: 1014400,
-      //         },
-      //       },
-      //     }),
-      //   ],
-      // });
-
-      const para = new ImageRun({
-        data: fs.readFileSync(path),
-        transformation: {
-          width: 400,
-          height: 400,
-        },
-      });
-
-      tempArr.push(para);
-    });
-  }
-
-
-  return tempArr;
-};
-
-const generateTableCells = (folderName) => {
-  // const folderName = './tmp/uploads/32dc259c-3743-468a-adee-747fa29253aa/';
-  let tempArr = [];
-
-  if (!fs.existsSync(folderName)) {
-    return tempArr;
-  }
-
-  const storeCells = [];
-  const files = fs.readdirSync(folderName);
-
-  const createTableCell = (path) => {
-    return new TableCell({
-      children: [
-        new Paragraph({
-          children: [
-            new ImageRun({
-              data: fs.readFileSync(path),
-              transformation: {
-                width: 300,
-                height: 300,
-              },
-            }),
-          ],
-        }),
-        new Paragraph('hello'),
-      ],
-      verticalAlign: VerticalAlign.CENTER,
-      margins: {
-        // top: convertInchesToTwip(0.69),
-        // bottom: convertInchesToTwip(0.69),
-        // left: convertInchesToTwip(0.69),
-        // right: convertInchesToTwip(0.69),
-      },
-      borders: {
-        top: {
-          style: BorderStyle.SINGLE,
-          size: 1,
-          color: '000000',
-        },
-        bottom: {
-          style: BorderStyle.SINGLE,
-          size: 5,
-          color: '000000',
-        },
-      },
-    });
-  };
-
-  files.forEach((file) => {
-    const filePath = path.join(folderName, file);
-    const cell = createTableCell(filePath);
-    storeCells.push(cell);
-  });
-
-  for (let i = 0; i < storeCells.length; i += 2) {
-    if (storeCells && storeCells[i]) {
-      const row = new TableRow({
-        children: storeCells[i + 1] ? [storeCells[i], storeCells[i + 1]] : [storeCells[i]],
-      });
-      tempArr.push(row);
-    }
-  }
-
-  return tempArr;
-};
-
 app.get('/download', async (req, res) => {
 
   const session = req.query.session;
@@ -167,146 +57,16 @@ app.get('/download', async (req, res) => {
     });
   }
 
-  const filePath = `./tmp/uploads/${session}`;
+  const filePath = `./src/tmp/uploads/${session}`;
 
   try {
-    // console.log('hii');
-
     const doc = new Document({
       sections: [
         {
           children: [
             new Paragraph('Hello World'),
-            // new Paragraph({
-            //   children: ImageCallback()
-            // }),
             new Table({
               rows: generateTableCells(filePath),
-              //  [
-              //   new TableRow({
-              //     children:
-              //       [
-              //         // new TableCell({
-              //         //   children: [
-              //         //     // new ImageRun({
-              //         //     //   data: './tmp/uploads/cat.jpg',
-              //         //     //   transformation: {
-              //         //     //     width: 300,
-              //         //     //     height: 300,
-              //         //     //   },
-              //         //     // }),
-
-              //         //     new Paragraph('hello'),
-              //         //   ],
-              //         //   verticalAlign: VerticalAlign.CENTER,
-              //         //   margins: {
-              //         //     top: convertInchesToTwip(0.69),
-              //         //     bottom: convertInchesToTwip(0.69),
-              //         //     left: convertInchesToTwip(0.69),
-              //         //     right: convertInchesToTwip(0.69),
-              //         //   },
-              //         //   borders: {
-              //         //     top: {
-              //         //       style: BorderStyle.SINGLE,
-              //         //       size: 1,
-              //         //       color: "000000",
-              //         //     },
-              //         //     bottom: {
-              //         //       style: BorderStyle.SINGLE,
-              //         //       size: 5,
-              //         //       color: "000000",
-              //         //     },
-              //         //   }
-              //         // }),
-              //         new TableCell({
-              //           children: [
-              //             new Paragraph({
-              //               children: [
-              //                 new ImageRun({
-              //                   data: fs.readFileSync('./cat.jpg'),
-              //                   transformation: {
-              //                     width: 100,
-              //                     height: 100,
-              //                   },
-              //                 }),
-              //               ],
-              //             }),
-              //             // new ImageRun({
-              //             //   data: './tmp/uploads/cat.jpg',
-              //             //   transformation: {
-              //             //     width: 300,
-              //             //     height: 300,
-              //             //   },
-              //             // }),
-
-              //             new Paragraph('hello'),
-              //           ],
-              //           verticalAlign: VerticalAlign.CENTER,
-              //           margins: {
-              //             top: convertInchesToTwip(0.69),
-              //             bottom: convertInchesToTwip(0.69),
-              //             left: convertInchesToTwip(0.69),
-              //             right: convertInchesToTwip(0.69),
-              //           },
-              //           borders: {
-              //             top: {
-              //               style: BorderStyle.SINGLE,
-              //               size: 1,
-              //               color: "000000",
-              //             },
-              //             bottom: {
-              //               style: BorderStyle.SINGLE,
-              //               size: 5,
-              //               color: "000000",
-              //             },
-              //           },
-              //           width: {
-              //             size: 50,
-              //             type: WidthType.PERCENTAGE
-              //           }
-              //         }),
-              //         new TableCell({
-              //           children: [
-              //             new Paragraph({
-              //               children: [
-              //                 new ImageRun({
-              //                   data: fs.readFileSync('./cat.jpg'),
-              //                   transformation: {
-              //                     width: 100,
-              //                     height: 100,
-              //                   },
-              //                 }),
-              //               ],
-              //             }),
-              //             new Paragraph('hello'),
-              //           ],
-              //           verticalAlign: VerticalAlign.CENTER,
-              //           margins: {
-              //             top: convertInchesToTwip(0.69),
-              //             bottom: convertInchesToTwip(0.69),
-              //             left: convertInchesToTwip(0.69),
-              //             right: convertInchesToTwip(0.69),
-              //           },
-              //           borders: {
-              //             top: {
-              //               style: BorderStyle.SINGLE,
-              //               size: 1,
-              //               color: "000000",
-              //             },
-              //             bottom: {
-              //               style: BorderStyle.SINGLE,
-              //               size: 5,
-              //               color: "000000",
-              //             },
-              //           },
-              //           width: {
-              //             size: 50,
-              //             type: WidthType.PERCENTAGE
-              //           }
-              //         }),
-              //       ],
-              //   }),
-              // ],
               width: {
                 size: 5000,
                 type: WidthType.DXA,
@@ -324,85 +84,3 @@ app.get('/download', async (req, res) => {
     res.status(500).json(error);
   }
 });
-
-// https://stackoverflow.com/questions/12740659/downloading-images-with-node-js
-const download = (uri, filename, callback) => {
-  request.head(uri, (err, res, body) => {
-    request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-  });
-};
-
-const URL =
-  'https://raw.githubusercontent.com/dolanmiu/docx/ccd655ef8be3828f2c4b1feb3517a905f98409d9/demo/images/cat.jpg';
-
-app.get('/', (req, res) => {
-  download(URL, 'cat.jpg', async () => {
-    const doc = new Document({
-      sections: [
-        {
-          children: [
-            new Paragraph('Hello World'),
-            new Paragraph({
-              children: [
-                new ImageRun({
-                  data: fs.readFileSync('./cat.jpg'),
-                  transformation: {
-                    width: 100,
-                    height: 100,
-                  },
-                }),
-              ],
-            }),
-            new Paragraph({
-              children: [
-                new ImageRun({
-                  data: fs.readFileSync('./cat.jpg'),
-                  transformation: {
-                    width: 200,
-                    height: 200,
-                  },
-                  floating: {
-                    horizontalPosition: {
-                      offset: 1014400,
-                    },
-                    verticalPosition: {
-                      offset: 1014400,
-                    },
-                  },
-                }),
-              ],
-            }),
-            new Paragraph({
-              children: [
-                new ImageRun({
-                  data: fs.readFileSync('./cat.jpg'),
-                  transformation: {
-                    width: 200,
-                    height: 200,
-                  },
-                  floating: {
-                    horizontalPosition: {
-                      relative: HorizontalPositionRelativeFrom.PAGE,
-                      align: HorizontalPositionAlign.RIGHT,
-                    },
-                    verticalPosition: {
-                      relative: VerticalPositionRelativeFrom.PAGE,
-                      align: VerticalPositionAlign.BOTTOM,
-                    },
-                  },
-                }),
-              ],
-            }),
-          ],
-        },
-      ],
-    });
-
-    const b64string = await Packer.toBase64String(doc);
-
-    res.setHeader('Content-Disposition', 'attachment; filename=My Document.docx');
-    res.send(Buffer.from(b64string, 'base64'));
-  });
-});
-
-app.listen(3001, () => console.log('Server up at 3001'));
