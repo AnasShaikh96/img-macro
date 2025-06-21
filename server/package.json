@@ -5,11 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-<<<<<<< HEAD
-    "start": "nodemon --exec ts-node --files src/index.ts",
-=======
     "start": "nodemon ./src/index.js",
->>>>>>> js_branch
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
   },
